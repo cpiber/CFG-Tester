@@ -1,0 +1,33 @@
+@import 'variables';
+
+.grid {
+  height: 100%;
+
+  display: grid;
+
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(3, 450px);
+  grid-template-areas: "left"
+    "right-top"
+    "right-bottom";
+
+  @include desktop {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas: "left right-top"
+      "left right-bottom";
+  }
+}
+
+.grid1 {
+  grid-area: left;
+}
+
+
+.grid2 {
+  grid-area: right-top;
+}
+
+.grid2 {
+  grid-area: right-bottom;
+}

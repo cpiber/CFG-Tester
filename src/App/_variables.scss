@@ -1,0 +1,10 @@
+/**
+ * App-wide variables
+ * can be imported by any component
+ */
+
+@mixin desktop {
+  @media (min-width: 741px) and (min-height: 612px) {
+    @content;
+  }
+}
