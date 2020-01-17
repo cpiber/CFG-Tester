@@ -1,8 +1,22 @@
 import React from 'react';
 
-function Footer() {
+function Footer(props) {
+  const year = (new Date()).getFullYear().toString(),
+    beginyear = process.env.REACT_APP_BEGIN_YEAR,
+    author = process.env.REACT_APP_AUTHOR,
+    source = process.env.REACT_APP_GITHUB_URL,
+    divider = " :: ";
   return (
-    <div className="App-footer">2019 by Constantin Piber - <a href={process.env.REACT_APP_GITHUB_URL}>Source</a></div>
+    <div className={`${props.className?props.className:''} App-footer`}>
+      {!beginyear || year === beginyear ? year : `${beginyear} - ${year}`}
+      {author && ` by ${author}`}
+      {source && (
+        <>
+          <span>{divider}</span>
+          <a href={source} target="_blank" rel="noopener noreferrer">Source</a>
+        </>
+      )}
+    </div>
   );
 }
 export default Footer;

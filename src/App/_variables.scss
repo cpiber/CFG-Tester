@@ -3,6 +3,22 @@
  * can be imported by any component
  */
 
+
+$primary: #42a5f5;
+$primary_light: #80d6ff;
+$primary_dark: #0077c2;
+$secondary: #b2dfdb;
+$secondary_light: #e5ffff;
+$secondary_dark: #82ada9;
+// https://material.io/resources/color/#!/?view.left=0&view.right=0&primary.color=42a5f4&secondary.color=B2DFDB
+
+$grey: #E1E2E1;
+$lightgrey: #F5F5F6;
+$error: #B00020;
+// https://material.io/design/color/the-color-system.html#color-theme-creation
+// https://material.io/design/color/the-color-system.html#tools-for-picking-colors
+
+
 @mixin desktop {
   @media (min-width: 741px) and (min-height: 612px) {
     @content;

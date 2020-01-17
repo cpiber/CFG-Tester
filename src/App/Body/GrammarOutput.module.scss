@@ -1,0 +1,28 @@
+@import '../variables';
+
+.strings {
+  height: 100%;
+  overflow: auto;
+  padding: 6px;
+
+  :global {
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    li {
+      padding: 6px 0;
+
+      &:not(:last-child) {
+        border-bottom: 1px dotted $grey;
+      }
+    }
+
+    span {
+      margin: 2px 0;
+      display: inline-block;
+    }
+  }
+}

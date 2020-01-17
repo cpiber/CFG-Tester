@@ -12,11 +12,13 @@
     "eslint": "^6.8.0",
     "gh-pages": "^2.2.0",
     "node-sass": "^4.13.0",
+    "query-string": "^6.10.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-modal": "^3.11.1",
     "react-scripts": "3.3.0",
     "typescript": "^3.7.4",
+    "unique-string": "^2.0.0",
     "unstated-next": "^1.1.0"
   },
   "scripts": {

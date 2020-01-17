@@ -8,7 +8,34 @@ html, body {
   margin: 0;
   padding: 0;
 
-  font-size: 18px;
+  background-color: $grey;
+  font-size: 16px;
+  @include desktop {
+    font-size: 18px;
+  }
+}
+
+h1, h2, h3 {
+  font-size: inherit;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+
+  &:link, &[href] {
+    border-bottom: 1px solid $primary;
+    transition: border-bottom-color 0.1s ease-in-out;
+    text-decoration: none;
+
+    &:hover {
+      border-bottom-color: $primary_light;
+    }
+
+    &:focus {
+      border-bottom-color: $primary_dark;
+    }
+  }
 }
 
 .App {
@@ -27,9 +54,104 @@ html, body {
 
   &-header {
     font-size: 22px;
+    @include desktop {
+      font-size: 28px;
+    }
+
+    padding: 18px 14px;
+
+    background-color: $primary;
+    //box-shadow: 0px 2px 6px grey;
   }
 
   &-footer {
     font-size: 14px;
+  }
+
+  &-bodyComponent {
+    margin: 12px;
+    padding: 6px 4px;
+    border-radius: 12px;
+    /*border: 2px solid $primary;
+    background-color: $secondary_light;*/
+    background-color: $lightgrey;
+    box-shadow: -2px 2px 5px grey, 2px 2px 5px grey;
+  }
+}
+
+.button {
+  all: unset;
+  margin: auto;
+
+  font-size: inherit;
+  border-radius: 6px;
+  padding: 8px 21px;
+
+  transition: background-color 0.1s ease-in-out, color 0.1s ease-in-out;
+
+  cursor: pointer;
+
+  &:disabled, &.disabled {
+    opacity: 0.75;
+    pointer-events: none;
+  }
+
+  &.primary {
+    background-color: $primary;
+    border: 2px solid $primary;
+
+    &:hover {
+      background-color: $primary_light;
+    }
+
+    &:focus {
+      background-color: $primary_dark;
+    }
+  }
+
+  &.secondary {
+    background-color: $secondary;
+    border: 2px solid $secondary;
+
+    &:hover {
+      background-color: $secondary_light;
+    }
+
+    &:focus {
+      background-color: $secondary_dark;
+    }
+  }
+}
+
+.input {
+  all: unset;
+
+  height: 1em;
+  width: auto;
+  max-width: 60px;
+
+  background: transparent;
+
+  padding: 7px;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  box-sizing: content-box;
+
+  cursor: text;
+
+  &.primary {
+    border-color: $primary;
+
+    &:focus {
+      border-color: $primary_dark;
+    }
+  }
+
+  &.secondary {
+    border-color: $secondary_dark;
+
+    &:focus {
+      border-color: $secondary_light;
+    }
   }
 }
