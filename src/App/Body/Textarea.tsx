@@ -3,13 +3,24 @@ import uniqueString from 'unique-string';
 
 import styles from './textarea.module.scss';
 
-function Textarea(props) {
+
+interface Props {
+  className?: string;
+  title?: string;
+  placeholder?: string;
+  onChange?: ((event: React.ChangeEvent<HTMLTextAreaElement>) => void);
+  value?: string;
+  aria?: string;
+  children?: JSX.Element[] | JSX.Element;
+}
+
+function Textarea(props: Props) {
   let id = uniqueString();
   return (
     <div className={`${styles.area} ${props.className?props.className:''}`}>
       {props.title && (
         <h2 className={styles.title}>
-          <label for={id}>{props.title}</label>
+          <label htmlFor={id}>{props.title}</label>
         </h2>
       )}
       <textarea

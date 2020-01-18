@@ -2,23 +2,33 @@ import React, { useState } from 'react';
 
 import styles from './bodyComponent.module.scss';
 
-import Query from '../Logic/querys.ts';
-import Textarea from './textarea';
+import Query from '../Logic/querys';
+import Textarea from './Textarea';
 
-function RulesInput(props) {
+
+interface Props {
+  className?: string;
+}
+
+function RulesInput(props: Props) {
   let query = Query.useContainer();
   let [buttonDisabled, buttonDisable] = useState(false);
 
-  function clickGenerate(e) {
-    e.target.blur();
+  const rulesChange = (e: React.ChangeEvent) =>
+    query.updateRules((e.target as HTMLInputElement).value);
+
+  const clickGenerate = (e: React.MouseEvent) => {
+    (e.target as HTMLElement).blur();
   }
 
   return (
-    <div className={`${props.className} App-bodyComponent`}>
+    <div
+      className={`${props.className?props.className:''} App-bodyComponent`}
+    >
       <Textarea
         className={styles.textarea}
         value={query.rules}
-        onChange={e => query.updateRules(e.target.value)}
+        onChange={rulesChange}
         title="Rules"
         aria="Rules that describe the grammar"
       >

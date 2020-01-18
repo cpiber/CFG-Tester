@@ -2,23 +2,33 @@ import React, { useState } from 'react';
 
 import styles from './bodyComponent.module.scss';
 
-import Query from '../Logic/querys.ts';
-import Textarea from './textarea';
+import Query from '../Logic/querys';
+import Textarea from './Textarea';
 
-function TextInput(props) {
+
+interface Props {
+  className?: string;
+}
+
+function TextInput(props: Props) {
   let query = Query.useContainer();
   let [buttonDisabled, buttonDisable] = useState(false);
 
-  function clickMatch(e) {
-    e.target.blur();
+  const inputChange = (e: React.ChangeEvent) =>
+    query.updateInput((e.target as HTMLInputElement).value);
+  
+  const clickMatch = (e: React.MouseEvent) => {
+    (e.target as HTMLElement).blur();
   }
 
   return (
-    <div className={`${props.className} App-bodyComponent`}>
+    <div
+      className={`${props.className?props.className:''} App-bodyComponent`}
+    >
       <Textarea
         className={styles.textarea}
         value={query.input}
-        onChange={e => query.updateInput(e.target.value)}
+        onChange={inputChange}
         title="Test Input"
         aria="Input to match with grammar"
       >

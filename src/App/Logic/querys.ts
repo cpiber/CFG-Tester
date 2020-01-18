@@ -2,25 +2,53 @@ import queryString from 'query-string';
 import { useState } from 'react';
 import { createContainer } from 'unstated-next';
 
+
+interface AppWindow extends Window {
+  cfg?: any;
+}
+
+interface AnyObject {
+  [key: string]: string
+}
+
 function useQuery() {
-  let parsed = queryString.parse(window.location.hash);
+  let [query] = useState<AnyObject>({});
+  let [rules, setRules] = useState("");
+  let [input, setInput] = useState("");
 
-  let [rules, setRules] = useState(parsed.rules);
-  let [input, setInput] = useState(parsed.input);
+  const updateHash = () => {
+    let parsed = queryString.parse(window.location.hash);
 
-  function updateRules(r: string) {
-    parsed.rules = r;
+    query.rules =
+      typeof(parsed.rules) === "string" ? parsed.rules : "" as string;
+    setRules(query.rules);
+
+    query.input =
+      typeof(parsed.input) === "string" ? parsed.input : "" as string;
+    setInput(query.input);
+  }
+
+  // Add event handlers exactly once
+  if (!(window as AppWindow).cfg) (() => {
+    window.addEventListener('hashchange', updateHash, false);
+    //window.addEventListener('load', updateHash, false);
+    updateHash();
+    (window as AppWindow).cfg = true;
+  })();
+
+  const updateRules = (r: string) => {
+    query.rules = r;
     setRules(r);
     updateQueryString();
   }
-  function updateInput(i: string) {
-    parsed.input = i;
+  const updateInput = (i: string) => {
+    query.input = i;
     setInput(i);
     updateQueryString();
   }
-
-  function updateQueryString() {
-    window.location.hash = queryString.stringify(parsed);
+  const updateQueryString = () => {
+    if (rules !== query.rules || input !== query.input)
+      window.location.hash = queryString.stringify(query);
   }
 
   return { rules, updateRules, input, updateInput }

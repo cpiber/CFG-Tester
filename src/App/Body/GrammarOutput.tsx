@@ -4,27 +4,36 @@ import styles from './GrammarOutput.module.scss';
 import stylesBody from './bodyComponent.module.scss';
 import textarea from './textarea.module.scss';
 
-class GrammarOutput extends React.Component {
+
+interface Props {
+  className?: string;
+  initialStrings?: string[];
+}
+
+class GrammarOutput extends React.Component<Props, {}> {
   state = {
-    strings: [],
-    buttonDisabled: false
+    strings: [] as string[],
+    buttonDisabled: false,
   }
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.clickGenerate = this.clickGenerate.bind(this);
 
-    let initialStrings = [
+    /*let initialStrings = [
       "some extra long string to test some things lorem ipsum and whatever... this is still the first line actually\nnewline"
     ];
-    for (let i = 0; i < 20; i++) initialStrings.push(i);
-    this.state.strings = initialStrings;
+    for (let i = 0; i < 20; i++) initialStrings.push(i.toString());*/
+    this.state.strings = props.initialStrings || [];
   }
 
-  clickGenerate(e) {
-    if (e.target.tagName === "INPUT") return;
-
-    e.target.blur();
+  clickGenerate(e: React.MouseEvent) {
+    if (!e.target) return;
+    let target = e.target as HTMLElement;
+    
+    if (target.tagName === "INPUT") return;
+    target.blur();
+    
     this.setState({strings: [...this.state.strings, "new"]});
   }
 
@@ -38,7 +47,9 @@ class GrammarOutput extends React.Component {
     ));
 
     return (
-      <div className={`${this.props.className} App-bodyComponent`}>
+      <div
+        className={`${this.props.className?this.props.className:''} App-bodyComponent`}
+      >
         <div className={`${textarea.area} ${stylesBody.textarea}`}>
           <h2 className={textarea.title}>Strings</h2>
           <div className={styles.strings}>
@@ -56,7 +67,7 @@ class GrammarOutput extends React.Component {
               Get <input
                 type="number"
                 className="input secondary"
-                size="5"
+                size={5}
                 aria-label="Number of strings to get"
                 /> more
             </button>

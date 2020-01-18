@@ -10,7 +10,10 @@ function App() {
   return (
     <div className="App">
       <Header></Header>
-      <Body className={styles.grid} grid={[styles.grid1, styles.grid2, styles.grid3]}></Body>
+      <Body
+        className={styles.grid}
+        grid={[styles.grid1, styles.grid2, styles.grid3]}
+      ></Body>
       <Footer></Footer>
     </div>
   );
