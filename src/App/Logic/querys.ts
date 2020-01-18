@@ -3,20 +3,18 @@ import { useState } from 'react';
 import { createContainer } from 'unstated-next';
 
 
-interface AppWindow extends Window {
-  cfg?: any;
-}
-
 interface AnyObject {
   [key: string]: string
 }
 
-function useQuery() {
-  let [query] = useState<AnyObject>({});
+let isInit = false;
+const query: AnyObject = {};
+
+const useQuery = () => {
   let [rules, setRules] = useState("");
   let [input, setInput] = useState("");
 
-  const updateHash = () => {
+  const updateQuery = () => {
     let parsed = queryString.parse(window.location.hash);
 
     query.rules =
@@ -29,12 +27,12 @@ function useQuery() {
   }
 
   // Add event handlers exactly once
-  if (!(window as AppWindow).cfg) (() => {
-    window.addEventListener('hashchange', updateHash, false);
-    //window.addEventListener('load', updateHash, false);
-    updateHash();
-    (window as AppWindow).cfg = true;
-  })();
+  if (!isInit) {
+    window.addEventListener('hashchange', updateQuery, false);
+    //window.addEventListener('load', updateQuery, false);
+    updateQuery();
+    isInit = true;
+  }
 
   const updateRules = (r: string) => {
     query.rules = r;
@@ -53,7 +51,6 @@ function useQuery() {
 
   return { rules, updateRules, input, updateInput }
 }
-
-let Query = createContainer(useQuery);
+const Query = createContainer(useQuery);
 
 export default Query;
