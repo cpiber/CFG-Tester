@@ -10,21 +10,34 @@ interface Props {
   initialStrings?: string[];
 }
 
+const NUM_KEY = 'cfg_gen_number';
 class GrammarOutput extends React.Component<Props, {}> {
   state = {
-    strings: [] as string[],
+    stringEls: [] as JSX.Element[],
     buttonDisabled: false,
-  }
+    number: 0
+  };
+  stringnum = 0;
 
   constructor(props: Props) {
     super(props);
     this.clickGenerate = this.clickGenerate.bind(this);
+    this.clickClear = this.clickClear.bind(this);
+    this.updateNum = this.updateNum.bind(this);
+    this.updateStrings = this.updateStrings.bind(this);
+    this.resetStrings = this.resetStrings.bind(this);
 
-    /*let initialStrings = [
+    let n = window.localStorage.getItem(NUM_KEY) || 0;
+    n = (+n) || 0;
+    this.state.number = n >= 1 ? n : 1;
+  }
+
+  componentDidMount() {
+    let initialStrings = [
       "some extra long string to test some things lorem ipsum and whatever... this is still the first line actually\nnewline"
     ];
-    for (let i = 0; i < 20; i++) initialStrings.push(i.toString());*/
-    this.state.strings = props.initialStrings || [];
+    for (let i = 0; i < 20; i++) initialStrings.push(i.toString());
+    this.updateStrings(this.props.initialStrings || initialStrings);
   }
 
   clickGenerate(e: React.MouseEvent) {
@@ -33,19 +46,45 @@ class GrammarOutput extends React.Component<Props, {}> {
     
     if (target.tagName === "INPUT") return;
     target.blur();
+
+    let newstrings = [] as string[];
+    for (let i = 0; i < this.state.number; i++) {
+      newstrings.push("new");
+    }
     
-    this.setState({strings: [...this.state.strings, "new"]});
+    this.updateStrings(newstrings);
   }
 
-  render() {
-    let strings = this.state.strings.map((str, ind) => (
-      <li key={ind} className="monospace">
+  clickClear(e: React.MouseEvent) {
+    if (!e.target) return;
+    (e.target as HTMLElement).blur();
+
+    this.resetStrings();
+  }
+
+  updateNum(e: React.ChangeEvent) {
+    let val = +(e.target as HTMLInputElement).value;
+    this.setState({number: val >= 1 ? val : 1});
+    window.localStorage.setItem(NUM_KEY, val.toString());
+  }
+
+  updateStrings(newstrings: string[]) {
+    let strings = newstrings.map((str, ind) => (
+      <li key={this.stringnum++} className="monospace">
         {str.toString().split('\n').map((val, key) => (
           <span key={key}>{val}<br /></span>
         ))}
       </li>
     ));
+    this.setState({stringEls: [...this.state.stringEls, ...strings]});
+  }
 
+  resetStrings() {
+    this.stringnum = 0;
+    this.setState({stringEls: []});
+  }
+
+  render() {
     return (
       <div
         className={`${this.props.className?this.props.className:''} App-bodyComponent`}
@@ -54,7 +93,7 @@ class GrammarOutput extends React.Component<Props, {}> {
           <h2 className={textarea.title}>Strings</h2>
           <div className={styles.strings}>
             <ul>
-              {strings}
+              {this.state.stringEls}
             </ul>
           </div>
           <div className="children">
@@ -66,10 +105,19 @@ class GrammarOutput extends React.Component<Props, {}> {
             >
               Get <input
                 type="number"
-                className="input secondary"
-                size={5}
+                className="input secondary_alt"
+                size={4}
+                value={this.state.number}
+                onChange={this.updateNum}
                 aria-label="Number of strings to get"
                 /> more
+            </button>
+            <button
+              className="button secondary"
+              onClick={this.clickClear}
+              aria-label="Clear strings"
+            >
+              Clear
             </button>
           </div>
         </div>

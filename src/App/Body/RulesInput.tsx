@@ -10,20 +10,42 @@ interface Props {
   className?: string;
 }
 
+let timeout = -1;
+const TIMEOUT = 400;
 function RulesInput(props: Props) {
   let query = Query.useContainer();
+  let [status, statusSet] = useState(["ok",""]);
   let [buttonDisabled, buttonDisable] = useState(false);
 
-  const rulesChange = (e: React.ChangeEvent) =>
+  const rulesChange = (e: React.ChangeEvent) => {
     query.updateRules((e.target as HTMLInputElement).value);
+    buttonDisable(true);
+    statusSet(["ok",""]);
+
+    window.clearTimeout(timeout);
+    timeout = window.setTimeout(loadRules, TIMEOUT);
+  }
 
   const clickGenerate = (e: React.MouseEvent) => {
     (e.target as HTMLElement).blur();
+    buttonDisable(true);
+    loadRules();
+  }
+
+  const loadRules = () => {
+    console.log('load');
+    buttonDisable(false);
+    statusSet(["error","Error in Grammar"]);
+  }
+
+  if (timeout === -1) {
+    loadRules();
+    timeout = 0;
   }
 
   return (
     <div
-      className={`${props.className?props.className:''} App-bodyComponent`}
+      className={`${props.className?props.className:''} status-${status[0]} App-bodyComponent`}
     >
       <Textarea
         className={styles.textarea}
@@ -32,13 +54,20 @@ function RulesInput(props: Props) {
         title="Rules"
         aria="Rules that describe the grammar"
       >
-        <button
-          className="button secondary"
-          onClick={clickGenerate}
-          disabled={buttonDisabled}
-        >
-          Regenerate Model
-        </button>
+        <div className="row1">
+          <span className="status">
+            {status[1]}
+          </span>
+        </div>
+        <div className="row2">
+          <button
+            className="button secondary"
+            onClick={clickGenerate}
+            disabled={buttonDisabled}
+          >
+            Regenerate Model
+          </button>
+        </div>
       </Textarea>
     </div>
   )

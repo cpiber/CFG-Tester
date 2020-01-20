@@ -1,6 +1,19 @@
+@import '../variables';
 
 .textarea :global {
   .children {
     text-align: center;
   }
+
+  .row1 {
+    margin: 3px 0;
+  }
+
+  .status {
+    display: inline-block;
+  }
+}
+
+:global .status-error :local(.textarea) .status {
+  color: $error;
 }

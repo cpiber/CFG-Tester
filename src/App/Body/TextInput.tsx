@@ -12,6 +12,7 @@ interface Props {
 
 function TextInput(props: Props) {
   let query = Query.useContainer();
+  let [status, statusSet] = useState("Matching is not implemented yet");
   let [buttonDisabled, buttonDisable] = useState(false);
 
   const inputChange = (e: React.ChangeEvent) =>
@@ -32,13 +33,20 @@ function TextInput(props: Props) {
         title="Test Input"
         aria="Input to match with grammar"
       >
-        <button
-          className="button secondary"
-          onClick={clickMatch}
-          disabled={buttonDisabled}
-        >
-          Re-Match
-        </button>
+        <div className="row1">
+          <span className="status">
+            {status}
+          </span>
+        </div>
+        <div className="row2">
+          <button
+            className="button secondary"
+            onClick={clickMatch}
+            disabled={buttonDisabled}
+          >
+            Re-Match
+          </button>
+        </div>
       </Textarea>
     </div>
   )
