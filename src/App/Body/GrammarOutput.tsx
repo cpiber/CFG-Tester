@@ -4,6 +4,9 @@ import styles from './GrammarOutput.module.scss';
 import stylesBody from './bodyComponent.module.scss';
 import textarea from './textarea.module.scss';
 
+import { vars } from '../Logic/querys';
+import grammar from '../Logic/grammar';
+
 
 interface Props {
   className?: string;
@@ -18,18 +21,22 @@ class GrammarOutput extends React.Component<Props, {}> {
     number: 0
   };
   stringnum = 0;
+  stringGen: Generator | undefined = undefined;
 
   constructor(props: Props) {
     super(props);
+    this.grammarUpdated = this.grammarUpdated.bind(this);
+    this.updateGenerator = this.updateGenerator.bind(this);
     this.clickGenerate = this.clickGenerate.bind(this);
     this.clickClear = this.clickClear.bind(this);
     this.updateNum = this.updateNum.bind(this);
     this.updateStrings = this.updateStrings.bind(this);
     this.resetStrings = this.resetStrings.bind(this);
 
-    let n = window.localStorage.getItem(NUM_KEY) || 0;
-    n = (+n) || 0;
+    let n = +(window.localStorage.getItem(NUM_KEY) || 15);
     this.state.number = n >= 1 ? n : 1;
+
+    vars.grammarUpdateCB = this.grammarUpdated;
   }
 
   componentDidMount() {
@@ -40,6 +47,20 @@ class GrammarOutput extends React.Component<Props, {}> {
     this.updateStrings(this.props.initialStrings || initialStrings);
   }
 
+  grammarUpdated() {
+    this.resetStrings();
+    this.updateGenerator();
+  }
+
+  updateGenerator() {
+    let gen = grammar.expandGenerator();
+    if (gen.error) {
+      console.error(gen.error);
+      return;
+    }
+    this.stringGen = gen.gen;
+  }
+
   clickGenerate(e: React.MouseEvent) {
     if (!e.target) return;
     let target = e.target as HTMLElement;
@@ -47,9 +68,13 @@ class GrammarOutput extends React.Component<Props, {}> {
     if (target.tagName === "INPUT") return;
     target.blur();
 
+    if (!this.stringGen) return;
+
     let newstrings = [] as string[];
     for (let i = 0; i < this.state.number; i++) {
-      newstrings.push("new");
+      let str = this.stringGen.next();
+      if (str.done) break;
+      newstrings.push(str.value as string);
     }
     
     this.updateStrings(newstrings);
@@ -60,6 +85,7 @@ class GrammarOutput extends React.Component<Props, {}> {
     (e.target as HTMLElement).blur();
 
     this.resetStrings();
+    this.updateGenerator();
   }
 
   updateNum(e: React.ChangeEvent) {

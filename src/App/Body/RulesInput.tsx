@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 
 import styles from './bodyComponent.module.scss';
 
-import Query from '../Logic/querys';
+import Query, { vars } from '../Logic/querys';
+import grammar from '../Logic/grammar';
 import Textarea from './Textarea';
 
 
@@ -10,15 +11,17 @@ interface Props {
   className?: string;
 }
 
-let timeout = -1;
+let timeout = 0;
 const TIMEOUT = 400;
 function RulesInput(props: Props) {
   let query = Query.useContainer();
   let [status, statusSet] = useState(["ok",""]);
   let [buttonDisabled, buttonDisable] = useState(false);
+  let rules = "";
 
   const rulesChange = (e: React.ChangeEvent) => {
-    query.updateRules((e.target as HTMLInputElement).value);
+    rules = (e.target as HTMLInputElement).value;
+    query.updateRules(rules);
     buttonDisable(true);
     statusSet(["ok",""]);
 
@@ -33,14 +36,19 @@ function RulesInput(props: Props) {
   }
 
   const loadRules = () => {
-    console.log('load');
     buttonDisable(false);
-    statusSet(["error","Error in Grammar"]);
+    const error = grammar.loadRules(rules);
+    vars.grammarUpdateCB();
+    if (error.error) {
+      statusSet(["error","Error on line "+error.line]);
+    } else {
+      statusSet(["",""]);
+    }
   }
 
-  if (timeout === -1) {
-    loadRules();
-    timeout = 0;
+  if (timeout === 0 && query.rules !== "") {
+    rules = query.rules;
+    timeout = window.setTimeout(loadRules, 1);
   }
 
   return (

@@ -175,4 +175,10 @@ a {
       border-color: $secondary_dark;
     }
   }
+
+  -moz-appearance: textfield;
+  &::-webkit-outer-spin-button, &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 }
