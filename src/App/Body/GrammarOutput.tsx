@@ -97,8 +97,8 @@ class GrammarOutput extends React.Component<Props, {}> {
   updateStrings(newstrings: string[]) {
     let strings = newstrings.map((str, ind) => (
       <li key={this.stringnum++} className="monospace">
-        {str.toString().split('\n').map((val, key) => (
-          <span key={key}>{val}<br /></span>
+        {str.toString().split(/\r\n|\r|\n|\\n/g).map((val, key) => (
+          <span key={key}>{val}</span>
         ))}
       </li>
     ));

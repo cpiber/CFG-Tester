@@ -3,6 +3,7 @@
 .grid {
   height: 100%;
   min-height: 0;
+  min-width: 0;
 
   display: grid;
   //grid-gap: 8px;
@@ -23,6 +24,7 @@
   // any grid element
   > * {
     min-height: 0;
+    min-width: 0;
   }
 }
 

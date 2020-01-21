@@ -3,6 +3,7 @@ const ruleMatchFCS = /^\s*([A-Z])\s*(?:->|→)\s*(.*)$/;
 const nonTerminalMatchFCS = /(\\*)([A-Z])/g;
 
 const branchMatch = /(\\*)\|/g;
+const escapeMatch = /(\\(?:n|r|t|f))|\\(.)/g;
 
 export const EXP_DEPTH = 'cfg_maxdepth'; // too prevent infinite recursion
 class Grammar {
@@ -12,7 +13,7 @@ class Grammar {
 
   loadRules(rules: string): { error: boolean, line?: number } {
     this.rules = [];
-    const lines = rules.split('\n');
+    const lines = rules.split(/\r\n|\r|\n/g);
     this.dict = {};
 
     const regexp = ruleMatchFCS;
@@ -37,7 +38,7 @@ class Grammar {
         // even number of backslashes means they are not
         // escaping the |
         if (bmatch[1].length % 2 === 0) {
-          const before = match[2].substring(lastIndex, bmatch.index);
+          let before = match[2].substring(lastIndex, bmatch.index + bmatch[1].length);
           newbranches.push(this.branchString(before));
           lastIndex = branchMatch.lastIndex;
         }
@@ -50,7 +51,7 @@ class Grammar {
       let index: number;
       if (match[1] in this.dict) {
         index = this.dict[match[1]];
-        this.rules[index].concat(newbranches);
+        this.rules[index] = this.rules[index].concat(newbranches);
       } else {
         index = this.rules.length;
         this.dict[match[1]] = index;
@@ -81,6 +82,8 @@ class Grammar {
         const after = branch.substring(lastIndex);
         if (after !== "") newbranch.push(after);
 
+        if (!newbranch.length) newbranch.push("");
+
         rule[j] = newbranch;
       }
     }
@@ -89,7 +92,8 @@ class Grammar {
   }
 
   branchString(string: string) {
-    return string === "^" || string === "" ? "" : string // symbols for empty
+    return string === "^" || string === "" ? "" : // symbols for empty
+      string.replace(escapeMatch, "$1$2"); // unescape
   }
 
   expandGenerator(startsym = 'S') {
@@ -102,7 +106,7 @@ class Grammar {
       lastSym: string|number
     ): Generator {
       if (depth > grammar.maxDepth) {
-        console.debug('too deep');
+        console.debug('max depth');
         return;
       }
       // non-terminal
