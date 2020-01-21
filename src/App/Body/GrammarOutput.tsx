@@ -40,10 +40,10 @@ class GrammarOutput extends React.Component<Props, {}> {
   }
 
   componentDidMount() {
-    let initialStrings = [
-      "some extra long string to test some things lorem ipsum and whatever... this is still the first line actually\nnewline"
+    let initialStrings: string[] = [
+      //"some extra long string to test some things lorem ipsum and whatever... this is still the first line actually\nnewline"
     ];
-    for (let i = 0; i < 20; i++) initialStrings.push(i.toString());
+    //for (let i = 0; i < 20; i++) initialStrings.push(i.toString());
     this.updateStrings(this.props.initialStrings || initialStrings);
   }
 
