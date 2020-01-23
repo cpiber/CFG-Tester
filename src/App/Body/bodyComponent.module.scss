@@ -9,11 +9,15 @@
     margin: 3px 0;
   }
 
-  .status {
+  div.status {
     display: inline-block;
   }
 }
 
 :global .status-error :local(.textarea) .status {
   color: $error;
+}
+
+:global .status-ok :local(.textarea) .status {
+  color: $ok;
 }

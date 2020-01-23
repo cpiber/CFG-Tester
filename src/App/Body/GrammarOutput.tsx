@@ -18,7 +18,8 @@ class GrammarOutput extends React.Component<Props, {}> {
   state = {
     stringEls: [] as JSX.Element[],
     buttonDisabled: false,
-    number: 0
+    number: 0,
+    status: ["",""],
   };
   stringnum = 0;
   stringGen: Generator | undefined = undefined;
@@ -56,8 +57,10 @@ class GrammarOutput extends React.Component<Props, {}> {
     let gen = grammar.expandGenerator();
     if (gen.error) {
       console.error(gen.error);
+      this.setState({status: ["error", "Error: "+gen.error]});
       return;
     }
+    this.setState({state: ["",""]});
     this.stringGen = gen.gen;
   }
 
@@ -75,6 +78,11 @@ class GrammarOutput extends React.Component<Props, {}> {
       let str = this.stringGen.next();
       if (str.done) break;
       newstrings.push(str.value as string);
+    }
+
+    if (!newstrings.length) {
+      this.setState({status: ["info", "Grammmar exhausted"]});
+      return;
     }
     
     this.updateStrings(newstrings);
@@ -113,7 +121,7 @@ class GrammarOutput extends React.Component<Props, {}> {
   render() {
     return (
       <div
-        className={`${this.props.className?this.props.className:''} App-bodyComponent`}
+        className={`${this.props.className?this.props.className:''} status-${this.state.status[0]} App-bodyComponent`}
       >
         <div className={`${textarea.area} ${stylesBody.textarea}`}>
           <h2 className={textarea.title}>Strings</h2>
@@ -123,28 +131,35 @@ class GrammarOutput extends React.Component<Props, {}> {
             </ul>
           </div>
           <div className="children">
-            <button
-              className="button secondary"
-              onClick={this.clickGenerate}
-              disabled={this.state.buttonDisabled}
-              aria-label="Get more strings"
-            >
-              Get <input
-                type="number"
-                className="input secondary_alt"
-                size={4}
-                value={this.state.number}
-                onChange={this.updateNum}
-                aria-label="Number of strings to get"
-                /> more
-            </button>
-            <button
-              className="button secondary"
-              onClick={this.clickClear}
-              aria-label="Clear strings"
-            >
-              Clear
-            </button>
+            <div className="row1">
+              <span className="status">
+                {this.state.status[1]}
+              </span>
+            </div>
+            <div className="row2">
+              <button
+                className="button secondary"
+                onClick={this.clickGenerate}
+                disabled={this.state.buttonDisabled}
+                aria-label="Get more strings"
+              >
+                Get <input
+                  type="number"
+                  className="input secondary_alt"
+                  size={4}
+                  value={this.state.number}
+                  onChange={this.updateNum}
+                  aria-label="Number of strings to get"
+                  /> more
+              </button>
+              <button
+                className="button secondary"
+                onClick={this.clickClear}
+                aria-label="Clear strings"
+              >
+                Clear
+              </button>
+            </div>
           </div>
         </div>
       </div>

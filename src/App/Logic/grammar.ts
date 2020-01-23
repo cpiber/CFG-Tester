@@ -92,8 +92,11 @@ class Grammar {
   }
 
   branchString(string: string) {
-    return string === "^" || string === "" ? "" : // symbols for empty
-      string.replace(escapeMatch, "$1$2"); // unescape
+    return (
+      string === "^" || string === "ε" || string.trim() === "" ?
+      "" : // symbols for empty
+      string.replace(escapeMatch, "$1$2") // unescape
+    );
   }
 
   expandGenerator(startsym = 'S') {
@@ -114,9 +117,8 @@ class Grammar {
         const rule = grammar.rules[start];
         for (let j = 0; j < rule.length; j++) {
           const branch = rule[j] as (string|number)[];
-          //const maxrules = grammar.maxDepth-branch.length-depth;
-
-          if (branch[0] === lastSym) continue;
+          
+          if (start === lastSym) continue;
 
           // prepend the branch's rules to the remaining ones
           // TODO: see tree diagram
@@ -124,9 +126,10 @@ class Grammar {
             branch[0],
             [
               ...branch.slice(1),
-              ...rules//.slice(0, maxrules >= 0 ? maxrules : 0)
+              ...rules
             ],
             string,
+            // set depth depending on next symbol (branch=same depth)
             depth + (typeof(branch[0]) === "number" ? 0 : 1),
             start
           );

@@ -82,6 +82,9 @@ a {
     &.status-error {
       box-shadow: $shadows, 0px 1px 5px 3px $error;
     }
+    &.status-ok {
+      box-shadow: $shadows, 0px 1px 5px 3px $ok;
+    }
   }
 }
 

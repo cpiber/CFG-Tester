@@ -15,7 +15,7 @@ let timeout = 0;
 const TIMEOUT = 400;
 function RulesInput(props: Props) {
   let query = Query.useContainer();
-  let [status, statusSet] = useState(["ok",""]);
+  let [status, statusSet] = useState(["",""]);
   let [buttonDisabled, buttonDisable] = useState(false);
   let rules = "";
 
@@ -23,7 +23,7 @@ function RulesInput(props: Props) {
     rules = (e.target as HTMLInputElement).value;
     query.updateRules(rules);
     buttonDisable(true);
-    statusSet(["ok",""]);
+    statusSet(["",""]);
 
     window.clearTimeout(timeout);
     timeout = window.setTimeout(loadRules, TIMEOUT);
@@ -42,7 +42,7 @@ function RulesInput(props: Props) {
     if (error.error) {
       statusSet(["error","Error on line "+error.line]);
     } else {
-      statusSet(["",""]);
+      statusSet(["ok","Grammar valid"]);
     }
   }
 
@@ -63,9 +63,9 @@ function RulesInput(props: Props) {
         aria="Rules that describe the grammar"
       >
         <div className="row1">
-          <span className="status">
+          <div className="status">
             {status[1]}
-          </span>
+          </div>
         </div>
         <div className="row2">
           <button
