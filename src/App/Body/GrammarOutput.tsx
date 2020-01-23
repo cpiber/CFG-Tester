@@ -56,11 +56,11 @@ class GrammarOutput extends React.Component<Props, {}> {
   updateGenerator() {
     let gen = grammar.expandGenerator();
     if (gen.error) {
-      console.error(gen.error);
-      this.setState({status: ["error", "Error: "+gen.error]});
+      console.error(gen);
+      this.setState({status: ["error", "Error: "+gen.msg]});
       return;
     }
-    this.setState({state: ["",""]});
+    this.setState({status: ["",""]});
     this.stringGen = gen.gen;
   }
 

@@ -115,22 +115,24 @@ class Grammar {
       // non-terminal
       if (typeof(start) === "number" && start in grammar.rules) {
         const rule = grammar.rules[start];
+        //if (start === lastSym) return;
+
         for (let j = 0; j < rule.length; j++) {
-          const branch = rule[j] as (string|number)[];
-          
-          if (start === lastSym) continue;
+          const symbols = rule[j] as (string|number)[];
+          // don't allow consequitive recursion
+          if (symbols[0] === lastSym) continue;
 
           // prepend the branch's rules to the remaining ones
           // TODO: see tree diagram
           yield* expand(
-            branch[0],
+            symbols[0],
             [
-              ...branch.slice(1),
+              ...symbols.slice(1),
               ...rules
             ],
             string,
-            // set depth depending on next symbol (branch=same depth)
-            depth + (typeof(branch[0]) === "number" ? 0 : 1),
+            // set depth depending on next symbol (symbols=same depth)
+            depth + (typeof(symbols[0]) === "number" ? 0 : 1),
             start
           );
         }

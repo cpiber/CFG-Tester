@@ -11,13 +11,13 @@ interface Props {
   className?: string;
 }
 
-let timeout = 0;
+let timeout = 0,
+  rules = "";
 const TIMEOUT = 400;
 function RulesInput(props: Props) {
   let query = Query.useContainer();
   let [status, statusSet] = useState(["",""]);
   let [buttonDisabled, buttonDisable] = useState(false);
-  let rules = "";
 
   const rulesChange = (e: React.ChangeEvent) => {
     rules = (e.target as HTMLInputElement).value;
@@ -38,11 +38,11 @@ function RulesInput(props: Props) {
   const loadRules = () => {
     buttonDisable(false);
     const error = grammar.loadRules(rules);
-    vars.grammarUpdateCB();
     if (error.error) {
       statusSet(["error","Error on line "+error.line]);
     } else {
       statusSet(["ok","Grammar valid"]);
+      vars.grammarUpdateCB();
     }
   }
 
