@@ -10,8 +10,6 @@ interface AnyObject {
 let isInit = false;
 const query: AnyObject = {};
 
-export const vars = { grammarUpdateCB: () => {} };
-
 const useQuery = () => {
   let [rules, setRules] = useState("");
   let [input, setInput] = useState("");

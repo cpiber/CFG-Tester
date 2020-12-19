@@ -10,10 +10,10 @@ interface Props {
   className?: string;
 }
 
-function TextInput(props: Props) {
+const TextInput = (props: Props) => {
   let query = Query.useContainer();
-  let [status, statusSet] = useState("Matching is not implemented yet");
-  let [buttonDisabled, buttonDisable] = useState(false);
+  let [status, /*setStatus*/] = useState("Matching is not implemented yet");
+  let [buttonDisabled, /*setButtonDisabled*/] = useState(false);
 
   const inputChange = (e: React.ChangeEvent) =>
     query.updateInput((e.target as HTMLInputElement).value);

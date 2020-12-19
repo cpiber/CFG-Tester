@@ -14,7 +14,7 @@ interface Props {
   children?: JSX.Element[] | JSX.Element;
 }
 
-function Textarea(props: Props) {
+const Textarea = (props: Props) => {
   let id = uniqueString();
   return (
     <div className={`${styles.area} ${props.className?props.className:''}`}>

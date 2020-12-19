@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import styles from './bodyComponent.module.scss';
 
-import Query, { vars } from '../Logic/querys';
+import Query from '../Logic/querys';
 import grammar from '../Logic/grammar';
 import Textarea from './Textarea';
 
@@ -11,45 +11,41 @@ interface Props {
   className?: string;
 }
 
-let timeout = 0,
-  rules = "";
-const TIMEOUT = 400;
-function RulesInput(props: Props) {
+const RulesInput = (props: Props) => {
   let query = Query.useContainer();
-  let [status, statusSet] = useState(["",""]);
-  let [buttonDisabled, buttonDisable] = useState(false);
+  let [status, setStatus] = useState(["",""]);
+  let [buttonDisabled, setButtonDisabled] = useState(false);
 
   const rulesChange = (e: React.ChangeEvent) => {
-    rules = (e.target as HTMLInputElement).value;
+    const rules = (e.target as HTMLInputElement).value;
     query.updateRules(rules);
-    buttonDisable(true);
-    statusSet(["",""]);
-
-    window.clearTimeout(timeout);
-    timeout = window.setTimeout(loadRules, TIMEOUT);
   }
 
   const clickGenerate = (e: React.MouseEvent) => {
     (e.target as HTMLElement).blur();
-    buttonDisable(true);
+    setButtonDisabled(true);
     loadRules();
+    const rules = query.rules;
+    query.updateRules(rules+" ");
+    query.updateRules(rules);
+    setButtonDisabled(false);
   }
 
-  const loadRules = () => {
-    buttonDisable(false);
-    const error = grammar.loadRules(rules);
+  const loadRules = useCallback(() => {
+    const error = grammar.loadRules(query.rules);
     if (error.error) {
-      statusSet(["error","Error on line "+error.line]);
+      setStatus(["error","Error on line "+error.line]);
     } else {
-      statusSet(["ok","Grammar valid"]);
-      vars.grammarUpdateCB();
+      setStatus(["ok","Grammar valid"]);
     }
-  }
+  }, [query.rules]);
 
-  if (timeout === 0 && query.rules !== "") {
-    rules = query.rules;
-    timeout = window.setTimeout(loadRules, 1);
-  }
+  useEffect(() => {
+    setButtonDisabled(true);
+    setStatus(["", ""]);
+    loadRules();
+    setButtonDisabled(false);
+  }, [query.rules, loadRules]);
 
   return (
     <div

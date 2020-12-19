@@ -11,7 +11,7 @@ interface Props {
   grid: string[];
 }
 
-function Body(props: Props) {
+const Body = (props: Props) => {
   return (
     <div
       className={props.className}

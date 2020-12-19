@@ -5,11 +5,15 @@ const nonTerminalMatchFCS = /(\\*)([A-Z])/g;
 const branchMatch = /(\\*)\|/g;
 const escapeMatch = /(\\(?:n|r|t|f))|\\(.)/g;
 
-export const EXP_DEPTH = 'cfg_maxdepth'; // too prevent infinite recursion
+export const EXP_DEPTH = 'cfg_maxdepth'; // to prevent infinite recursion
+export const EXP_NONTERM = 'cfg_maxnonterm'; // maximum non-terminals in a row
+export const EXP_NONTERMTYPE = 'cfg_maxnontermoftype'; // maximum non-terminals in a row
 class Grammar {
-  rules = [] as ((string|number)[]|string)[][];
-  dict = {} as { [key:string]: number };
-  maxDepth = +(window.localStorage.getItem(EXP_DEPTH) || 15);
+  rules = [] as ((string | number)[] | string)[][];
+  dict = {} as { [key: string]: number };
+  maxDepth = +(window.localStorage.getItem(EXP_DEPTH) || 30);
+  nonTerms = +(window.localStorage.getItem(EXP_NONTERM) || 30);
+  nonTermsOfType = +(window.localStorage.getItem(EXP_NONTERMTYPE) || 10);
 
   loadRules(rules: string): { error: boolean, line?: number } {
     this.rules = [];
@@ -22,11 +26,11 @@ class Grammar {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       if (line.trim() === "") continue; // ignore empty lines
-      
+
       const match = line.match(regexp);
 
       if (!match) {
-        const error = { error: true, line: i+1 };
+        const error = { error: true, line: i + 1 };
         console.log(error);
         return error;
       }
@@ -94,33 +98,38 @@ class Grammar {
   branchString(string: string) {
     return (
       string === "^" || string === "ε" || string.trim() === "" ?
-      "" : // symbols for empty
-      string.replace(escapeMatch, "$1$2") // unescape
+        "" : // symbols for empty
+        string.replace(escapeMatch, "$1$2") // unescape
     );
   }
 
   expandGenerator(startsym = 'S') {
-    let grammar = this;
+    let g = this;
     function* expand(
-      start: string|number,
-      rules: (string|number)[],
+      start: string | number,
+      rules: (string | number)[],
       string: string,
       depth: number,
-      lastSym: string|number
+      nonterms: number,
+      nontermstype: number,
     ): Generator {
-      if (depth > grammar.maxDepth) {
-        console.debug('max depth');
-        return;
-      }
       // non-terminal
-      if (typeof(start) === "number" && start in grammar.rules) {
-        const rule = grammar.rules[start];
-        //if (start === lastSym) return;
+      if (typeof (start) === "number" && g.rules.length >= start) {
+        const rule = g.rules[start];
 
+        let returns = 0;
         for (let j = 0; j < rule.length; j++) {
-          const symbols = rule[j] as (string|number)[];
-          // don't allow consequitive recursion
-          if (symbols[0] === lastSym) continue;
+          const symbols = rule[j] as (string | number)[];
+
+          if (typeof (symbols[0]) == "number" && (depth > g.maxDepth || nonterms > g.nonTerms)) {
+            console.debug('max depth or max number of nonterms, skipping');
+            continue;
+          }
+          if (start === symbols[0] && nontermstype > g.nonTermsOfType) {
+            console.debug('max nonterminals of type, skipping');
+            continue;
+          }
+          ++returns;
 
           // prepend the branch's rules to the remaining ones
           // TODO: see tree diagram
@@ -131,10 +140,14 @@ class Grammar {
               ...rules
             ],
             string,
-            // set depth depending on next symbol (symbols=same depth)
-            depth + (typeof(symbols[0]) === "number" ? 0 : 1),
-            start
+            depth + 1,
+            nonterms + 1,
+            start === symbols[0] ? nontermstype + 1 : 0,
           );
+        }
+        if (!returns) {
+          console.debug('Skipped all');
+          yield string;
         }
       } else {
         if (rules.length) {
@@ -143,8 +156,9 @@ class Grammar {
             rules[0],
             rules.slice(1),
             string + start,
-            depth,
-            start
+            depth + 1,
+            0,
+            0,
           );
         } else {
           // leaf node - offer complete string
@@ -153,14 +167,14 @@ class Grammar {
       }
     }
 
-    const start = (startsym in this.dict ? this.dict[startsym] : -1);
-    if (start === -1) {
+    const s = (startsym in this.dict ? this.dict[startsym] : -1);
+    if (s === -1) {
       return { error: true, msg: "Symbol not found" };
     }
-    return { error: false, gen: expand(start, [], "", 0, -1) };
+    return { error: false, gen: expand(s, [], "", 0, 0, 0) };
   }
 }
 const grammar = new Grammar();
-(window as {[key:string]:any}).grammar = grammar;
+(window as { [key: string]: any }).grammar = grammar;
 
 export default grammar;
