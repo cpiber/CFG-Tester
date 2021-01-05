@@ -1,56 +1,24 @@
 import queryString from 'query-string';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createContainer } from 'unstated-next';
-
-
-interface AnyObject {
-  [key: string]: string
-}
-
-let isInit = false;
-const query: AnyObject = {};
 
 const useQuery = () => {
   let [rules, setRules] = useState("");
   let [input, setInput] = useState("");
 
-  const updateQuery = () => {
-    let parsed = queryString.parse(window.location.hash);
+  const updateQuery = (query: string) => {
+    let parsed = queryString.parse(query);
 
-    query.rules =
-      typeof(parsed.rules) === "string" ? parsed.rules : "" as string;
-    setRules(query.rules);
-
-    query.input =
-      typeof(parsed.input) === "string" ? parsed.input : "" as string;
-    setInput(query.input);
+    setRules(typeof(parsed.rules) === "string" ? parsed.rules : "" as string);
+    setInput(typeof(parsed.input) === "string" ? parsed.input : "" as string);
   }
 
-  // Add event handlers exactly once
-  if (!isInit) {
-    window.addEventListener('hashchange', updateQuery, false);
-    //window.addEventListener('load', updateQuery, false);
-    updateQuery();
-    isInit = true;
-  }
+  useEffect(() => {
+    window.location.hash = queryString.stringify({ rules, input })
+  }, [rules, input]);
 
-  const updateRules = (r: string) => {
-    query.rules = r;
-    setRules(r);
-    updateQueryString();
-  }
-  const updateInput = (i: string) => {
-    query.input = i;
-    setInput(i);
-    updateQueryString();
-  }
-  const updateQueryString = () => {
-    if (rules !== query.rules || input !== query.input)
-      window.location.hash = queryString.stringify(query);
-  }
-
-  return { rules, updateRules, input, updateInput }
+  return { rules, setRules, input, setInput, updateQuery }
 }
-const Query = createContainer(useQuery);
 
+const Query = createContainer(useQuery);
 export default Query;

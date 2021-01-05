@@ -16,7 +16,7 @@ const TextInput = (props: Props) => {
   let [buttonDisabled, /*setButtonDisabled*/] = useState(false);
 
   const inputChange = (e: React.ChangeEvent) =>
-    query.updateInput((e.target as HTMLInputElement).value);
+    query.setInput((e.target as HTMLInputElement).value);
   
   const clickMatch = (e: React.MouseEvent) => {
     (e.target as HTMLElement).blur();

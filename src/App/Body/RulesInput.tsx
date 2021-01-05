@@ -18,7 +18,7 @@ const RulesInput = (props: Props) => {
 
   const rulesChange = (e: React.ChangeEvent) => {
     const rules = (e.target as HTMLInputElement).value;
-    query.updateRules(rules);
+    query.setRules(rules);
   }
 
   const clickGenerate = (e: React.MouseEvent) => {
@@ -26,8 +26,8 @@ const RulesInput = (props: Props) => {
     setButtonDisabled(true);
     loadRules();
     const rules = query.rules;
-    query.updateRules(rules+" ");
-    query.updateRules(rules);
+    query.setRules(rules+" ");
+    query.setRules(rules);
     setButtonDisabled(false);
   }
 

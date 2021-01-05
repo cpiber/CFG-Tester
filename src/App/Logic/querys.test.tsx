@@ -1,6 +1,8 @@
-import React, { useEffect } from 'react';
+import { cleanup, fireEvent, render } from '@testing-library/react';
+import React from 'react';
 import Query from './querys';
-import { render, act, fireEvent, waitForDomChange } from '@testing-library/react'
+
+afterEach(cleanup);
 
 
 const TestComponent = () => {
@@ -9,15 +11,19 @@ const TestComponent = () => {
   return (
     <React.Fragment>
       <input
+        data-testid="hash"
+        onChange={(e: React.ChangeEvent) => { // mock hash change event
+          query.updateQuery((e.target as HTMLInputElement).value)}} />
+      <input
         data-testid="rules"
         onChange={(e: React.ChangeEvent) =>
-          query.updateRules((e.target as HTMLInputElement).value)}
+          query.setRules((e.target as HTMLInputElement).value)}
         value={query.rules}
       />
       <input
         data-testid="input"
         onChange={(e: React.ChangeEvent) =>
-          query.updateInput((e.target as HTMLInputElement).value)}
+          query.setInput((e.target as HTMLInputElement).value)}
         value={query.input}
       />
     </React.Fragment>
@@ -34,35 +40,28 @@ test('hash sets rules and input', () => {
     expectedInput = "input";
 
   const { getByTestId } = renderTest();
-  act(() => {
-    window.location.hash = "rules="+expectedRules+"&input="+expectedInput;
-  });
+  const hash = "rules=" + expectedRules + "&input=" + expectedInput;
+  fireEvent.change(getByTestId('hash'), { target: { value: hash } });
 
-  return waitForDomChange().then(() => {
-    expect((getByTestId('rules') as HTMLInputElement).value).toBe(expectedRules);
-    expect((getByTestId('input') as HTMLInputElement).value).toBe(expectedInput);
-  }).catch(err => console.error(`Error: ${err}`));
+  expect((getByTestId('rules') as HTMLInputElement).value).toBe(expectedRules);
+  expect((getByTestId('input') as HTMLInputElement).value).toBe(expectedInput);
 });
 
 test('updating state sets hash', done => {
   const expectedRules = "newrule",
     expectedInput = "newinput";
 
-  act(() => {
-    window.location.hash = "";
-  });
+  window.location.hash = "";
 
   let { getByTestId } = renderTest();
 
   window.addEventListener('hashchange', () => {
     expect(window.location.hash).toBe(
-      "#input="+expectedInput+"&rules="+expectedRules
+      "#input=" + expectedInput + "&rules=" + expectedRules
     );
     done();
   });
 
-  act(() => {
-    fireEvent.change(getByTestId('rules'), { target: {value: expectedRules} });
-    fireEvent.change(getByTestId('input'), { target: {value: expectedInput} });
-  });
+  fireEvent.change(getByTestId('rules'), { target: { value: expectedRules } });
+  fireEvent.change(getByTestId('input'), { target: { value: expectedInput } });
 });
