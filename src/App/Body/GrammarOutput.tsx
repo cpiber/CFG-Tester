@@ -64,8 +64,7 @@ const GrammarOutput = (props: Props) => {
     if (!e.target) return;
     (e.target as HTMLElement).blur();
 
-    resetStrings();
-    updateGenerator();
+    grammarUpdated();
   };
 
   const updateNum = (e: React.ChangeEvent) => {

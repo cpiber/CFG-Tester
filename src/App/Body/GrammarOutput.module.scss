@@ -23,6 +23,9 @@
     span {
       margin: 2px 0;
       display: block;
+      word-break: break-all;
+      word-break: break-word;
+      hyphens: auto;
     }
   }
 }

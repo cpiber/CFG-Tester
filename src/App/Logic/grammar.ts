@@ -11,7 +11,7 @@ export const EXP_NONTERMTYPE = 'cfg_maxnontermoftype'; // maximum non-terminals 
 class Grammar {
   rules = [] as ((string | number)[] | string)[][];
   dict = {} as { [key: string]: number };
-  maxDepth = +(window.localStorage.getItem(EXP_DEPTH) || 30);
+  maxDepth = +(window.localStorage.getItem(EXP_DEPTH) || 50);
   nonTerms = +(window.localStorage.getItem(EXP_NONTERM) || 30);
   nonTermsOfType = +(window.localStorage.getItem(EXP_NONTERMTYPE) || 10);
 
@@ -113,6 +113,11 @@ class Grammar {
       nonterms: number,
       nontermstype: number,
     ): Generator {
+      if (depth > g.maxDepth || nonterms > g.nonTerms) {
+        console.debug('max depth');
+        yield rules.reduce((str, symb) => typeof (symb) === "number" ? str : str + symb, string);
+      }
+
       // non-terminal
       if (typeof (start) === "number" && g.rules.length >= start) {
         const rule = g.rules[start];
@@ -121,8 +126,8 @@ class Grammar {
         for (let j = 0; j < rule.length; j++) {
           const symbols = rule[j] as (string | number)[];
 
-          if (typeof (symbols[0]) == "number" && (depth > g.maxDepth || nonterms > g.nonTerms)) {
-            console.debug('max depth or max number of nonterms, skipping');
+          if (typeof (symbols[0]) == "number" && nonterms > g.nonTerms) {
+            console.debug('max number of nonterms, skipping');
             continue;
           }
           if (start === symbols[0] && nontermstype > g.nonTermsOfType) {
@@ -157,7 +162,7 @@ class Grammar {
             rules.slice(1),
             string + start,
             depth + 1,
-            0,
+            nonterms,
             0,
           );
         } else {
