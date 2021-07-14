@@ -25,10 +25,8 @@ class FCSGrammar extends Grammar {
 
       const match = line.match(regexp);
 
-      if (!match) {
-        console.error('Error: ', i + 1);
-        throw new Error(`Syntax error on line ${i + 1}`);
-      }
+      if (!match)
+        throw new Error(`Syntax error on line ${i + 1}: ${this.lineToError(line)}`);
 
       let newbranches: Terminal[] = [],
         bmatch: RegExpExecArray | null,
@@ -89,6 +87,12 @@ class FCSGrammar extends Grammar {
         new EmptySymbol() : // symbols for empty
         new Terminal(string.replace(escapeMatch, "$1$2")) // unescape
     );
+  }
+
+  private lineToError(line: string) {
+    if (line.indexOf("->") === -1 && line.indexOf("→") === -1)
+      return "Rule indicator '->' missing";
+    return "Non-terminal symbols must be single capital letters";
   }
 
   clear() {
