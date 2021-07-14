@@ -44,8 +44,6 @@ class FCSGrammar extends Grammar {
       newbranches.push(this.branchToTerminal(after.trim()));
       const rules = newbranches.map(t => [t]);
 
-      // each non-terminal receives an id (index)
-      // save ids via hashtable
       if (match[1] in this.rules) {
         this.rules[match[1]].push(...rules);
       } else {
@@ -67,13 +65,13 @@ class FCSGrammar extends Grammar {
         // escaping the non-terminal
         if (match[1].length % 2 === 0 && match[2] in this.rules) {
           const before = branch.substring(lastIndex, match.index);
-          if (before !== "") newbranch.push(this.branchToTerminal(before));
+          if (before !== "") newbranch.push(this.branchToTerminal(before, true));
           newbranch.push(new NonTerminal(match[2]));
           lastIndex = regexp.lastIndex;
         }
       }
       const after = branch.substring(lastIndex).trim();
-      if (after !== "") newbranch.push(this.branchToTerminal(after));
+      if (after !== "") newbranch.push(this.branchToTerminal(after, true));
 
       if (!newbranch.length) newbranch.push(new EmptySymbol());
 
@@ -81,11 +79,11 @@ class FCSGrammar extends Grammar {
     }
   }
 
-  private branchToTerminal(string: string) {
+  private branchToTerminal(string: string, escape = false) {
     return (
       string === "^" || string === "ε" || string === "" ?
-        new EmptySymbol() : // symbols for empty
-        new Terminal(string.replace(escapeMatch, "$1$2")) // unescape
+        new EmptySymbol() :
+        new Terminal(escape ? string.replace(escapeMatch, "$1$2") : string)
     );
   }
 

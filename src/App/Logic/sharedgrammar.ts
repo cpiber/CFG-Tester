@@ -32,12 +32,12 @@ class QueueElement {
   rule: Rule;
   before: string;
   depth: number;
-  consecutiveNonTerminals: number;
-  constructor(rule: Rule, before = "", depth = 0, consecutiveNonTerminals = 0) {
+  nonTerminals: number;
+  constructor(rule: Rule, before = "", depth = 0, nonTerminals = 0) {
     this.rule = rule;
     this.before = before;
     this.depth = depth;
-    this.consecutiveNonTerminals = consecutiveNonTerminals;
+    this.nonTerminals = nonTerminals;
   }
 }
 
@@ -56,24 +56,23 @@ export abstract class Grammar {
     function* generator(queue: QueueElement[]): Generator<string, undefined, never> {
       let next: QueueElement | undefined;
       while ((next = queue.shift())) {
-        let { rule, before, depth, consecutiveNonTerminals } = next;
+        let { rule, before, depth, nonTerminals } = next;
         let symbol = rule.shift();
         while (symbol instanceof Terminal) { // string all terminals together
           before += symbol.symbol;
           symbol = rule.shift();
-          consecutiveNonTerminals = 0;
+          nonTerminals = 0;
         }
         if (symbol === undefined) { // no more symbols to process
           yield before;
           continue;
         }
+        if (depth > g.maxDepth || nonTerminals > g.maxNonTerms)
+          continue;
         // create a new branch for every possible path
         const applicable = g.rules[symbol.symbol];
-        for (const nrule of applicable) {
-          if (nrule[0] instanceof NonTerminal && (depth > g.maxDepth || consecutiveNonTerminals > g.maxNonTerms))
-            continue;
-          queue.push(new QueueElement([...nrule, ...rule], before, depth + 1, consecutiveNonTerminals + 1));
-        }
+        for (const nrule of applicable)
+          queue.push(new QueueElement([...nrule, ...rule], before, depth + 1, nonTerminals + 1));
       }
       return undefined;
     }
