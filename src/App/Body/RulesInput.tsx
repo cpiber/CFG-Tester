@@ -3,8 +3,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styles from './bodyComponent.module.scss';
 
 import Query from '../Logic/querys';
-import grammar from '../Logic/grammar';
 import Textarea from './Textarea';
+import FCSGrammar from '../Logic/fcsgrammar';
 
 
 interface Props {
@@ -12,40 +12,32 @@ interface Props {
 }
 
 const RulesInput = (props: Props) => {
-  let query = Query.useContainer();
-  let [status, setStatus] = useState(["",""]);
-  let [buttonDisabled, setButtonDisabled] = useState(false);
+  const { rules, setRules, setGrammar } = Query.useContainer();
+  const [status, setStatus] = useState(["",""]);
+  let timeout = 0;
 
   const rulesChange = (e: React.ChangeEvent) => {
-    const rules = (e.target as HTMLInputElement).value;
-    query.setRules(rules);
-  }
+    setRules((e.target as HTMLInputElement).value);
+  };
 
   const clickGenerate = (e: React.MouseEvent) => {
     (e.target as HTMLElement).blur();
-    setButtonDisabled(true);
     loadRules();
-    const rules = query.rules;
-    query.setRules(rules+" ");
-    query.setRules(rules);
-    setButtonDisabled(false);
-  }
+  };
 
   const loadRules = useCallback(() => {
-    const error = grammar.loadRules(query.rules);
-    if (error.error) {
-      setStatus(["error","Error on line "+error.line]);
-    } else {
-      setStatus(["ok","Grammar valid"]);
-    }
-  }, [query.rules]);
+    window.clearTimeout(timeout);
+    window.setTimeout((r: string) => {
+      try {
+        setGrammar(new FCSGrammar(r));
+        setStatus(["", ""]);
+      } catch (err) {
+        setStatus(["error",`${err}`]);
+      }
+    }, 10, rules);
+  }, [rules, setGrammar, timeout]);
 
-  useEffect(() => {
-    setButtonDisabled(true);
-    setStatus(["", ""]);
-    loadRules();
-    setButtonDisabled(false);
-  }, [query.rules, loadRules]);
+  useEffect(loadRules, [rules, loadRules]);
 
   return (
     <div
@@ -53,7 +45,7 @@ const RulesInput = (props: Props) => {
     >
       <Textarea
         className={styles.textarea}
-        value={query.rules}
+        value={rules}
         onChange={rulesChange}
         title="Rules"
         aria="Rules that describe the grammar"
@@ -67,7 +59,6 @@ const RulesInput = (props: Props) => {
           <button
             className="button secondary"
             onClick={clickGenerate}
-            disabled={buttonDisabled}
           >
             Regenerate Model
           </button>
