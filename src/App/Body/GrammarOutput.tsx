@@ -5,6 +5,8 @@ import stylesBody from './bodyComponent.module.scss';
 import textarea from './textarea.module.scss';
 
 import Query from '../Logic/querys';
+import { clamp } from '../Logic/util';
+import { Grammar } from '../Logic/sharedgrammar';
 
 
 interface Props {
@@ -13,22 +15,32 @@ interface Props {
 }
 
 const NUM_KEY = 'cfg_gen_number';
+const n_min = 1;
+const n_max = 999;
+const n = clamp(+(window.localStorage.getItem(NUM_KEY) || 15), n_min, n_max);
+
+const checkClick = (e: React.MouseEvent, grammar: Grammar | undefined): grammar is Grammar => {
+  if (!e.target) return false;
+  const target = e.target as HTMLElement;
+  
+  if (target.tagName === "INPUT") return false;
+  target.blur();
+
+  if (!grammar) return false;
+
+  return true;
+};
+
 const GrammarOutput = (props: Props) => {
   const { grammar } = Query.useContainer();
   const [strings, setStrings] = useState([] as string[]);
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const n = +(window.localStorage.getItem(NUM_KEY) || 15);
-  const [number, setNumber] = useState(n >= 1 ? n : 1);
+  const [number, setNumber] = useState(n);
   const [status, setStatus] = useState(["",""]);
 
   const clickGenerate = (e: React.MouseEvent) => {
-    if (!e.target) return;
-    const target = e.target as HTMLElement;
-    
-    if (target.tagName === "INPUT") return;
-    target.blur();
-
-    if (!grammar) return;
+    if (!checkClick(e, grammar))
+      return;
 
     setButtonDisabled(true);
 
@@ -56,14 +68,13 @@ const GrammarOutput = (props: Props) => {
   };
 
   const updateNum = (e: React.ChangeEvent) => {
-    const val = +(e.target as HTMLInputElement).value;
-    setNumber(val >= 1 ? val : 1);
+    const val = clamp(+(e.target as HTMLInputElement).value, n_min, n_max);
+    setNumber(val);
     window.localStorage.setItem(NUM_KEY, val.toString());
   };
 
-  const resetStrings = () => setStrings([]);
   const grammarUpdated = () => {
-    resetStrings();
+    setStrings([]);
 
     try {
       grammar?.checkExpandable();
@@ -112,7 +123,7 @@ const GrammarOutput = (props: Props) => {
               Get <input
                 type="number"
                 className="input secondary_alt"
-                size={4}
+                size={3}
                 value={number}
                 onChange={updateNum}
                 aria-label="Number of strings to get"

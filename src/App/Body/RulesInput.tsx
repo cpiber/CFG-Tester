@@ -1,10 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react';
-
-import styles from './bodyComponent.module.scss';
-
-import Query from '../Logic/querys';
-import Textarea from './Textarea';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import FCSGrammar from '../Logic/fcsgrammar';
+import Query from '../Logic/querys';
+import styles from './bodyComponent.module.scss';
+import Textarea from './Textarea';
 
 
 interface Props {
@@ -14,7 +12,7 @@ interface Props {
 const RulesInput = (props: Props) => {
   const { rules, setRules, setGrammar } = Query.useContainer();
   const [status, setStatus] = useState(["",""]);
-  let timeout = 0;
+  const timeout = useRef(0);
 
   const rulesChange = (e: React.ChangeEvent) => {
     setRules((e.target as HTMLInputElement).value);
@@ -25,17 +23,19 @@ const RulesInput = (props: Props) => {
     loadRules();
   };
 
+  // parse rules, debounced
   const loadRules = useCallback(() => {
-    window.clearTimeout(timeout);
-    window.setTimeout((r: string) => {
+    timeout.current = window.setTimeout(() => {
       try {
-        setGrammar(new FCSGrammar(r));
-        setStatus(["", ""]);
+        setGrammar(new FCSGrammar(rules));
+        setStatus(["ok", ""]);
       } catch (err) {
         setStatus(["error",`${err}`]);
       }
-    }, 10, rules);
-  }, [rules, setGrammar, timeout]);
+      console.log(rules);
+    }, 50);
+    return () => window.clearTimeout(timeout.current);
+  }, [rules, setGrammar]);
 
   useEffect(loadRules, [rules, loadRules]);
 

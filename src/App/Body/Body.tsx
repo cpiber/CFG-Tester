@@ -4,7 +4,6 @@ import Query from '../Logic/querys';
 import RulesInput from './RulesInput';
 import TextInput from './TextInput';
 import GrammarOutput from './GrammarOutput';
-import EventManager from './EventManager';
 
 
 interface Props {
@@ -18,7 +17,6 @@ const Body = (props: Props) => {
       className={props.className}
     >
       <Query.Provider>
-        <EventManager />
         <RulesInput
           className={props.grid[0]}
         ></RulesInput>

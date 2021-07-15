@@ -13,7 +13,6 @@ class FCSGrammar extends Grammar {
     for (const sym in this.rules) {
       this.parseNonTerminals(this.rules[sym]);
     }
-    console.debug(this.rules);
   }
 
   private parseRules(lines: string[]) {
