@@ -21,9 +21,21 @@ $ok: #66bb6a;
 // https://material.io/design/color/the-color-system.html#color-theme-creation
 // https://material.io/design/color/the-color-system.html#tools-for-picking-colors
 
-
+$minWidth: 741px;
+$minHeight: 612px;
 @mixin desktop {
-  @media (min-width: 741px) and (min-height: 612px) {
+  @media (min-width: $minWidth) and (min-height: $minHeight) {
+    @content;
+  }
+}
+@mixin portrait {
+  @media (min-width: $minWidth) {
+    @content;
+  }
+}
+@mixin landscape {
+  @warn "Avoid this macro, mobile first policy";
+  @media (min-height: $minHeight) {
     @content;
   }
 }

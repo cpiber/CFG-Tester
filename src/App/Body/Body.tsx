@@ -1,5 +1,6 @@
 import React from 'react';
 import Query from '../Logic/querys';
+import styles from './Body.module.scss';
 
 import RulesInput from './RulesInput';
 import TextInput from './TextInput';
@@ -8,23 +9,22 @@ import GrammarOutput from './GrammarOutput';
 
 interface Props {
   className?: string;
-  grid: string[];
 }
 
 const Body = (props: Props) => {
   return (
     <div
-      className={props.className}
+      className={`${props.className || ''} ${styles.grid}`}
     >
       <Query.Provider initialState={window.location.hash}>
         <RulesInput
-          className={props.grid[0]}
+          className={styles.left}
         ></RulesInput>
         <TextInput
-          className={props.grid[1]}
+          className={styles.rightTop}
         ></TextInput>
         <GrammarOutput
-          className={props.grid[2]}
+          className={styles.rightBottom}
         ></GrammarOutput>
       </Query.Provider>
     </div>

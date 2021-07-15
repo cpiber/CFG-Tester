@@ -14,7 +14,7 @@ function Footer(props: Props) {
 
   return (
     <footer
-      className={`${props.className?props.className:''} App-footer`}
+      className={`${props.className || ''} App-footer`}
     >
       {!beginyear || year === beginyear ? year : `${beginyear}-${year}`}
       {author && ` by ${author}`}

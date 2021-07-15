@@ -41,7 +41,7 @@ const RulesInput = (props: Props) => {
 
   return (
     <div
-      className={`${props.className?props.className:''} status-${status[0]} App-bodyComponent`}
+      className={`${props.className || ''} status-${status[0]} App-bodyComponent`}
     >
       <Textarea
         className={styles.textarea}

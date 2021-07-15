@@ -8,7 +8,7 @@ interface Props {
 function Header(props: Props) {
   return (
     <header
-      className={`${props.className?props.className:''} App-header`}
+      className={`${props.className || ''} App-header`}
     >
       <h1>
         <abbr title="Context-free grammar">CFG</abbr> Testing suite

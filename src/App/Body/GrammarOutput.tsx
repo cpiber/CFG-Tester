@@ -96,7 +96,7 @@ const GrammarOutput = (props: Props) => {
   
   return (
     <div
-      className={`${props.className?props.className:''} status-${status[0]} App-bodyComponent`}
+      className={`${props.className || ''} status-${status[0]} App-bodyComponent`}
     >
       <div className={`${textarea.area} ${stylesBody.textarea}`}>
         <h2 className={textarea.title}>Strings</h2>

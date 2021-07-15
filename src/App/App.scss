@@ -45,6 +45,9 @@ a {
   @include desktop {
     height: 100vh;
   }
+  @include portrait {
+    min-height: 100vh;
+  }
 
 
   // General header and footer styles

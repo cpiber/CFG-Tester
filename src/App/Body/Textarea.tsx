@@ -17,7 +17,7 @@ interface Props {
 const Textarea = (props: Props) => {
   let id = uniqueString();
   return (
-    <div className={`${styles.area} ${props.className?props.className:''}`}>
+    <div className={`${styles.area} ${props.className || ''}`}>
       {props.title && (
         <h2 className={styles.title}>
           <label htmlFor={id}>{props.title}</label>

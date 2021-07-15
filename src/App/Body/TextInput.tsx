@@ -24,7 +24,7 @@ const TextInput = (props: Props) => {
 
   return (
     <div
-      className={`${props.className?props.className:''} App-bodyComponent`}
+      className={`${props.className || ''} App-bodyComponent`}
     >
       <Textarea
         className={styles.textarea}
