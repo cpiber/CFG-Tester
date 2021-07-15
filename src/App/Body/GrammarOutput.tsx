@@ -1,12 +1,10 @@
-import React, { useEffect, useState, useMemo } from 'react';
-
-import styles from './GrammarOutput.module.scss';
-import stylesBody from './bodyComponent.module.scss';
-import textarea from './textarea.module.scss';
-
+import React, { useEffect, useMemo, useState } from 'react';
 import Query from '../Logic/querys';
-import { clamp } from '../Logic/util';
 import { Grammar } from '../Logic/sharedgrammar';
+import { clamp } from '../Logic/util';
+import stylesBody from './bodyComponent.module.scss';
+import styles from './GrammarOutput.module.scss';
+import textarea from './textarea.module.scss';
 
 
 interface Props {

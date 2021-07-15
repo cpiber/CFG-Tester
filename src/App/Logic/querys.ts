@@ -1,9 +1,9 @@
 import queryString from 'query-string';
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createContainer } from 'unstated-next';
 import { Grammar } from './sharedgrammar';
 
-const useQuery = () => {
+const useQuery = (initialQuery = "") => {
   const parse = (query: string) => {
     const parsed = queryString.parse(query);
     const nr = typeof(parsed.rules) === "string" ? parsed.rules : "" as string;
@@ -11,7 +11,7 @@ const useQuery = () => {
     return { rules: nr, input: ni };
   };
 
-  const [state, setState] = useState(parse(window.location.hash));
+  const [state, setState] = useState(parse(initialQuery));
   const [grammar, setGrammar] = useState(undefined as Grammar | undefined);
 
   const setRules = useCallback((nr: string) => setState({ ...state, rules: nr }), [state, setState]);

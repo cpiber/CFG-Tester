@@ -16,7 +16,7 @@ const Body = (props: Props) => {
     <div
       className={props.className}
     >
-      <Query.Provider>
+      <Query.Provider initialState={window.location.hash}>
         <RulesInput
           className={props.grid[0]}
         ></RulesInput>
