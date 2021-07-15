@@ -21,7 +21,7 @@ $ok: #66bb6a;
 // https://material.io/design/color/the-color-system.html#color-theme-creation
 // https://material.io/design/color/the-color-system.html#tools-for-picking-colors
 
-$minWidth: 741px;
+$minWidth: 791px;
 $minHeight: 612px;
 @mixin desktop {
   @media (min-width: $minWidth) and (min-height: $minHeight) {

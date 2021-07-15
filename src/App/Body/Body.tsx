@@ -14,7 +14,7 @@ interface Props {
 const Body = (props: Props) => {
   return (
     <div
-      className={`${props.className || ''} ${styles.grid}`}
+      className={`${props.className || ''} ${styles.grid} App-body`}
     >
       <Query.Provider initialState={window.location.hash}>
         <RulesInput

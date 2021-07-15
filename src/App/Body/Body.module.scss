@@ -24,12 +24,8 @@
 
   // any grid element
   > * {
-    min-height: 200px;
+    min-height: 0;
     min-width: 0;
-
-    @include desktop {
-      min-height: 0;
-    }
   }
 }
 

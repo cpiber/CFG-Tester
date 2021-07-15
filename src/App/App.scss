@@ -42,13 +42,12 @@ a {
   display: flex;
   flex-direction: column;
 
+  @include portrait {
+    height: $minHeight;
+  }
   @include desktop {
     height: 100vh;
   }
-  @include portrait {
-    min-height: 100vh;
-  }
-
 
   // General header and footer styles
   &-header, &-footer {
@@ -69,6 +68,17 @@ a {
 
   &-footer {
     font-size: 14px;
+  }
+
+  &-body {
+    padding: 4px;
+
+    @include portrait {
+      padding: 8px;
+    }
+    @include desktop {
+      padding: 0;
+    }
   }
 
   &-bodyComponent {

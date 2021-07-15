@@ -32,7 +32,6 @@ const RulesInput = (props: Props) => {
       } catch (err) {
         setStatus(["error",`${err}`]);
       }
-      console.log(rules);
     }, 50);
     return () => window.clearTimeout(timeout.current);
   }, [rules, setGrammar]);
