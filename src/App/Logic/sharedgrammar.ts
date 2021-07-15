@@ -46,7 +46,7 @@ export abstract class Grammar {
   private gen: Generator<string | Error, undefined, never> | undefined = undefined;
   private maxDepth = +(window.localStorage.getItem(EXP_DEPTH) || 20);
   private maxNonTerms = +(window.localStorage.getItem(EXP_NONTERM) || 10);
-  private maxIter = +(window.localStorage.getItem(EXP_ITER) || 500);
+  private maxIter = +(window.localStorage.getItem(EXP_ITER) || 5000);
 
   protected rules: { [key: string]: Rule[] } = {};
   abstract clear(): void;
@@ -60,13 +60,8 @@ export abstract class Grammar {
       let next: QueueElement | undefined;
       while ((next = queue.shift())) {
         iterSinceYield ++;
-        let { rule, before, depth, nonTerminals } = next;
-        let symbol = rule.shift();
-        while (symbol instanceof Terminal) { // string all terminals together
-          before += symbol.symbol;
-          symbol = rule.shift();
-          nonTerminals = 0;
-        }
+        let symbol = g.expandTerminal(next);
+        const { rule, before, depth, nonTerminals } = next;
         if (symbol === undefined) { // no more symbols to process
           yield before;
           iterSinceYield = 0;
@@ -78,14 +73,30 @@ export abstract class Grammar {
         }
         if (depth > g.maxDepth || nonTerminals > g.maxNonTerms)
           continue;
-        // create a new branch for every possible path
-        const applicable = g.rules[symbol.symbol];
-        for (const nrule of applicable)
-          queue.push(new QueueElement([...nrule, ...rule], before, depth + 1, nonTerminals + 1));
+        g.expandNonTerminal(symbol, rule, queue, next);
       }
       return undefined;
     }
     this.gen = generator([new QueueElement([new NonTerminal(startsym)])]);
+  }
+
+  private expandTerminal(next: QueueElement) {
+    const rule = next.rule;
+    let symbol = rule.shift();
+    while (symbol instanceof Terminal) { // string all terminals together
+      next.before += symbol.symbol;
+      symbol = rule.shift();
+      next.nonTerminals = 0;
+    }
+    return symbol;
+  }
+
+  private expandNonTerminal(symbol: Terminal, rule: Rule, queue: QueueElement[], next: QueueElement) {
+    const { before, depth, nonTerminals } = next;
+    // create a new branch for every possible path
+    const applicable = this.rules[symbol.symbol];
+    for (const nrule of applicable)
+      queue.push(new QueueElement([...nrule, ...rule], before, depth + 1, nonTerminals + 1));
   }
 
   next(): string | Error | undefined {

@@ -100,10 +100,6 @@ class FCSGrammar extends Grammar {
     if (!('S' in this.rules))
       throw new Error("Startsymbol 'S' not found");
   }
-
-  next(): string | Error | undefined {
-    return super.next();
-  }
 }
 
 export default FCSGrammar;
