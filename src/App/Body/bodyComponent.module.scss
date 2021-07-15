@@ -13,6 +13,9 @@
     display: inline-block;
   }
 }
+:global .status-warn :local(.textarea) .status {
+  color: $warn;
+}
 
 :global .status-error :local(.textarea) .status {
   color: $error;

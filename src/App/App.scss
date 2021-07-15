@@ -92,6 +92,9 @@ a {
     $shadows: -2px 2px 5px grey, 2px 2px 5px grey;
     box-shadow: $shadows;
 
+    &.status-warn {
+      box-shadow: $shadows, 0px 1px 5px 3px $warn;
+    }
     &.status-error {
       box-shadow: $shadows, 0px 1px 5px 3px $error;
     }

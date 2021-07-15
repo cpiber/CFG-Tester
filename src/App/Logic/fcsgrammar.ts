@@ -101,7 +101,7 @@ class FCSGrammar extends Grammar {
       throw new Error("Startsymbol 'S' not found");
   }
 
-  next(): string | undefined {
+  next(): string | Error | undefined {
     return super.next();
   }
 }

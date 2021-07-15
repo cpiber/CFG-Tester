@@ -4,6 +4,7 @@ export const escapeMatch = /(\\(?:n|r|t|f))|\\(.)/g;
 
 const EXP_DEPTH = 'cfg_maxdepth'; // to prevent infinite recursion
 const EXP_NONTERM = 'cfg_maxnonterm'; // maximum non-terminals in a row
+const EXP_ITER = 'cfg_iter'; // maximum iterations between yields per call
 
 interface GSymbol {
   symbol: string;
@@ -42,9 +43,10 @@ class QueueElement {
 }
 
 export abstract class Grammar {
-  private gen: Generator<string, undefined, never> | undefined = undefined;
+  private gen: Generator<string | Error, undefined, never> | undefined = undefined;
   private maxDepth = +(window.localStorage.getItem(EXP_DEPTH) || 20);
   private maxNonTerms = +(window.localStorage.getItem(EXP_NONTERM) || 10);
+  private maxIter = +(window.localStorage.getItem(EXP_ITER) || 500);
 
   protected rules: { [key: string]: Rule[] } = {};
   abstract clear(): void;
@@ -52,10 +54,12 @@ export abstract class Grammar {
 
   protected initGenerator(startsym: string) {
     const g = this;
+    let iterSinceYield = 0;
     // search all possible paths using BFS
-    function* generator(queue: QueueElement[]): Generator<string, undefined, never> {
+    function* generator(queue: QueueElement[]): Generator<string | Error, undefined, never> {
       let next: QueueElement | undefined;
       while ((next = queue.shift())) {
+        iterSinceYield ++;
         let { rule, before, depth, nonTerminals } = next;
         let symbol = rule.shift();
         while (symbol instanceof Terminal) { // string all terminals together
@@ -65,7 +69,12 @@ export abstract class Grammar {
         }
         if (symbol === undefined) { // no more symbols to process
           yield before;
+          iterSinceYield = 0;
           continue;
+        }
+        if (iterSinceYield >= g.maxIter) {
+          yield new Error(`Iterated ${iterSinceYield} times without finding a new value`);
+          iterSinceYield = 0;
         }
         if (depth > g.maxDepth || nonTerminals > g.maxNonTerms)
           continue;
@@ -79,7 +88,7 @@ export abstract class Grammar {
     this.gen = generator([new QueueElement([new NonTerminal(startsym)])]);
   }
 
-  next(): string | undefined {
+  next(): string | Error | undefined {
     if (!this.gen)
       throw new Error("Attempted to call .next without a generator, this should never happen!");
     return this.gen.next().value;

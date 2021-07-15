@@ -1,13 +1,13 @@
 import queryString from 'query-string';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createContainer } from 'unstated-next';
-import { Grammar } from './sharedgrammar';
+import type { Grammar } from './sharedgrammar';
 
 const useQuery = (initialQuery = "") => {
   const parse = (query: string) => {
     const parsed = queryString.parse(query);
-    const nr = typeof(parsed.rules) === "string" ? parsed.rules : "" as string;
-    const ni = typeof(parsed.input) === "string" ? parsed.input : "" as string;
+    const nr = typeof(parsed.rules) === "string" ? parsed.rules : "";
+    const ni = typeof(parsed.input) === "string" ? parsed.input : "";
     return { rules: nr, input: ni };
   };
 

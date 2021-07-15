@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Query from '../Logic/querys';
-import { Grammar } from '../Logic/sharedgrammar';
+import type { Grammar } from '../Logic/sharedgrammar';
 import { clamp } from '../Logic/util';
 import stylesBody from './bodyComponent.module.scss';
 import styles from './GrammarOutput.module.scss';
@@ -41,17 +41,24 @@ const GrammarOutput = (props: Props) => {
       return;
 
     setButtonDisabled(true);
+    setStatus(["", ""]);
 
     const newstrings = [] as string[];
+    let hasWarn = false;
     for (let i = 0; i < number; i++) {
       const str = grammar.next();
       if (str === undefined)
         break;
+      if (str instanceof Error) {
+        hasWarn = true;
+        setStatus(["warn", str.message]);
+        break;
+      }
       newstrings.push(str);
     }
     setStrings([...strings, ...newstrings]);
 
-    if (newstrings.length < number) {
+    if (newstrings.length < number && !hasWarn) {
       setStatus(["info", "Grammmar exhausted"]);
       return;
     }
