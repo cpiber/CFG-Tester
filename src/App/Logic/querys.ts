@@ -3,6 +3,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createContainer } from 'unstated-next';
 import type { Grammar } from './sharedgrammar';
 
+declare global {
+  interface Window {
+    grammar: Grammar | undefined;
+  }
+}
+
 const useQuery = (initialQuery = "") => {
   const parse = (query: string) => {
     const parsed = queryString.parse(query);
@@ -31,6 +37,10 @@ const useQuery = (initialQuery = "") => {
     timeout.current = window.setTimeout(() => window.location.hash = queryString.stringify(state), 100);
     return () => window.clearTimeout(timeout.current);
   }, [state]);
+
+  useEffect(() => {
+    window.grammar = grammar;
+  }, [grammar]);
 
   return { ...state, setRules, setInput, grammar, setGrammar, updateQuery };
 };
