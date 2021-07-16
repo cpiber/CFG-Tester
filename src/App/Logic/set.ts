@@ -16,7 +16,7 @@ class ComparableSet<V extends Comparable> implements Set<V> {
     return this.map.delete(value.hash());
   }
   forEach(callbackfn: (value: V, value2: V, set: Set<V>) => void, thisArg?: any): void {
-    this.map.forEach((v, _, __) => callbackfn(v, v, this), thisArg);
+    this.map.forEach((v, _, __) => callbackfn.call(thisArg, v, v, this), thisArg);
   }
   has(value: V): boolean {
     return this.map.has(value.hash());
@@ -30,9 +30,9 @@ class ComparableSet<V extends Comparable> implements Set<V> {
       return undefined;
     })();
   }
-  clear() { return this.map.clear(); }
-  keys() { return this.map.values(); }
-  values() { return this.map.values(); }
+  clear = this.map.clear.bind(this.map);
+  keys = this.map.values.bind(this.map);
+  values = this.map.values.bind(this.map);
   [Symbol.iterator] = this.values;
   [Symbol.toStringTag]: string;
 }
