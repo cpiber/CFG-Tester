@@ -2,6 +2,7 @@ import ComparableSet, { Comparable } from './set';
 
 export const branchMatch = /(\\*)\|/g;
 export const escapeMatch = /(\\(?:n|r|t|f))|\\(.)/g;
+export const escapeNewline = /(^|[^\\])(\\\\)*\\$/g;
 
 const EXP_DEPTH = 'cfg_maxdepth'; // to prevent infinite recursion
 const EXP_NONTERM = 'cfg_maxnonterm'; // maximum non-terminals in a row
@@ -99,6 +100,40 @@ export abstract class Grammar {
           throw new Error('EmptySymbol found in a longer rule, this should never happen!');
       }
     }
+  }
+
+  protected prepareRules(rules: string) {
+    return rules.split(/\r\n|\r|\n/g).map((l, i, lines) => {
+      const line = l.trim();
+      if (line === "") return null; // ignore empty lines
+      if (line.match(escapeNewline)) {
+        if (i + 1 === lines.length)
+          return line.slice(0, line.length - 1);
+        const newline = line.slice(0, line.length - 1) + lines[i + 1].trim();
+        lines[i + 1] = "";
+        return newline;
+      }
+      return line;
+    });
+  }
+
+  protected toBranches(branch: string, branchToTerminal: (s: string) => Terminal) {
+    const prep = (str: string) => str.trim().replace(/\\n/g, "\n").replace(/\\r/g, "\r").replace(/\\t/g, "\t").replace(/\\f/g, "\f");
+    let newbranches: Terminal[] = [],
+        bmatch: RegExpExecArray | null,
+        lastIndex = 0;
+    while ((bmatch = branchMatch.exec(branch)) !== null) {
+      // even number of backslashes means they are not
+      // escaping the |
+      if (bmatch[1].length % 2 === 0) {
+        const before = branch.substring(lastIndex, bmatch.index + bmatch[1].length);
+        newbranches.push(branchToTerminal(prep(before)));
+        lastIndex = branchMatch.lastIndex;
+      }
+    }
+    const after = branch.substring(lastIndex);
+    newbranches.push(branchToTerminal(prep(after)));
+    return newbranches;
   }
 
   protected initGenerator(startsym: string) {

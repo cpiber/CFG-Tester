@@ -1,12 +1,12 @@
-import { branchMatch, EmptySymbol, escapeMatch, Grammar, NonTerminal, Rule, Terminal } from "./sharedgrammar";
+import { EmptySymbol, escapeMatch, Grammar, NonTerminal, Rule, Terminal } from "./sharedgrammar";
 
-const ruleMatchFCS = /^\s*([A-Z])\s*(?:->|→)\s*(.*)$/;
+const ruleMatchFCS = /^\s*([A-Z])\s*(?:->|→)\s*((?:.|\n)*)$/m;
 const nonTerminalMatchFCS = /(\\*)([A-Z])/g;
 
 class FCSGrammar extends Grammar {
   constructor(rules: string) {
     super();
-    const lines = rules.split(/\r\n|\r|\n/g);
+    const lines = super.prepareRules(rules);
     this.parseRules(lines);
 
     // check for non-terminals in rules
@@ -15,33 +15,18 @@ class FCSGrammar extends Grammar {
     }
   }
 
-  private parseRules(lines: string[]) {
-    const regexp = ruleMatchFCS;
+  private parseRules(lines: (string | null)[]) {
     // parse rules into arrays
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      if (line.trim() === "") continue; // ignore empty lines
-
-      const match = line.match(regexp);
+      if (line === null)
+        continue;
+      const match = line.match(ruleMatchFCS);
 
       if (!match)
         throw new Error(`Syntax error on line ${i + 1}: ${this.lineToError(line)}`);
 
-      let newbranches: Terminal[] = [],
-        bmatch: RegExpExecArray | null,
-        lastIndex = 0;
-      while ((bmatch = branchMatch.exec(match[2])) !== null) {
-        // even number of backslashes means they are not
-        // escaping the |
-        if (bmatch[1].length % 2 === 0) {
-          let before = match[2].substring(lastIndex, bmatch.index + bmatch[1].length);
-          newbranches.push(this.branchToTerminal(before.trim()));
-          lastIndex = branchMatch.lastIndex;
-        }
-      }
-      const after = match[2].substring(lastIndex);
-      newbranches.push(this.branchToTerminal(after.trim()));
-      const rules = newbranches.map(t => [t]);
+      const rules = this.toBranches(match[2], this.branchToTerminal).map(t => [t]);
 
       if (match[1] in this.rules) {
         this.rules[match[1]].push(...rules);
@@ -53,23 +38,22 @@ class FCSGrammar extends Grammar {
 
   private parseNonTerminals(rules: Rule[]) {
     for (let j = 0; j < rules.length; j++) {
-      const branch = rules[j][0].symbol, // currently only 1 terminal symbol, split that
-        regexp = nonTerminalMatchFCS;
+      const branch = rules[j][0].symbol; // currently only 1 terminal symbol, split that
       let match: RegExpExecArray | null,
         newbranch: Rule = [],
         lastIndex = 0;
 
-      while ((match = regexp.exec(branch)) !== null) {
+      while ((match = nonTerminalMatchFCS.exec(branch)) !== null) {
         // even number of backslashes means they are not
         // escaping the non-terminal
         if (match[1].length % 2 === 0 && match[2] in this.rules) {
           const before = branch.substring(lastIndex, match.index);
           if (before !== "") newbranch.push(this.branchToTerminal(before, true));
           newbranch.push(new NonTerminal(match[2]));
-          lastIndex = regexp.lastIndex;
+          lastIndex = nonTerminalMatchFCS.lastIndex;
         }
       }
-      const after = branch.substring(lastIndex).trim();
+      const after = branch.substring(lastIndex);
       if (after !== "") newbranch.push(this.branchToTerminal(after, true));
 
       if (!newbranch.length) newbranch.push(new EmptySymbol());
@@ -87,6 +71,7 @@ class FCSGrammar extends Grammar {
   }
 
   private lineToError(line: string) {
+    console.error('Error on line:', line);
     if (line.indexOf("->") === -1 && line.indexOf("→") === -1)
       return "Rule indicator '->' missing";
     return "Non-terminal symbols must be single capital letters";
