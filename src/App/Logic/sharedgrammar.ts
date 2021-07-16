@@ -60,7 +60,7 @@ class ParseState<Sym extends Terminal | NonTerminal | undefined = Terminal | Non
     this.after = after;
     this.k = k;
   }
-  isFinished(): this is ParseState<undefined> { return this.symbol === undefined; }
+  isFinished(): this is ParseState<undefined> { return this.symbol === undefined || this.symbol instanceof EmptySymbol; }
   isTerminal(): this is ParseState<Terminal> { return this.symbol instanceof Terminal; }
   isNonTerminal(): this is ParseState<NonTerminal> { return this.symbol instanceof NonTerminal; }
 
@@ -79,13 +79,29 @@ export abstract class Grammar {
 
   protected rules: { [key: string]: Rule[] } = {};
   abstract clear(): void;
-  abstract checkExpandable(): void;
   abstract matches(str: string): boolean;
-
+  
   next(): string | Error | undefined {
     if (!this.gen)
       throw new Error("Attempted to call .next without a generator, this should never happen!");
     return this.gen.next().value;
+  }
+  
+  checkValid(): void {
+    // these are internal sanity checks, they should indeed never happen ;)
+    for (const sym in this.rules) {
+      const rules = this.rules[sym];
+      if (rules.length === 0)
+        throw new Error('Empty ruleset, this should never happen!');
+      for (const rule of rules) {
+        if (rule.length === 0)
+          throw new Error('Empty rule, this should never happen!');
+        if (rule.length === 1 && rule[0].symbol === '' && !(rule[0] instanceof EmptySymbol))
+          throw new Error('Empty symbol that isn\'t an EmptySymbol, this should never happen!');
+        if (rule.length > 1 && rule.findIndex(s => s instanceof EmptySymbol) !== -1)
+          throw new Error('EmptySymbol found in a longer rule, this should never happen!');
+      }
+    }
   }
 
   protected initGenerator(startsym: string) {
@@ -164,13 +180,11 @@ export abstract class Grammar {
   }
 
   private completer(s: ParseState<undefined>, k: number, state: ParseStateSet) {
-    const x = s.k;
-    const B = s.left;
-    for (const n of state[x]) {
+    for (const n of state[s.k]) {
       if (n.isFinished())
-        throw new Error("Finished state found, this should never happen!");
+        continue;
       const ns = n as ParseState<Terminal | NonTerminal>;
-      if (ns.symbol.equals(B))
+      if (ns.symbol.equals(s.left))
         this.nextInRule(ns, k, state);
     }
   }

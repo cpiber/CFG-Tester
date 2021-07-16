@@ -31,10 +31,10 @@ const checkClick = (e: React.MouseEvent, grammar: Grammar | undefined): grammar 
 
 const GrammarOutput = (props: Props) => {
   const { grammar } = Query.useContainer();
-  const [strings, setStrings] = useState([] as string[]);
-  const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [number, setNumber] = useState(n);
-  const [status, setStatus] = useState(["",""]);
+  const [ strings, setStrings ] = useState(new Set<string>());
+  const [ buttonDisabled, setButtonDisabled ] = useState(false);
+  const [ number, setNumber ] = useState(n);
+  const [ status, setStatus ] = useState(["",""]);
 
   const clickGenerate = (e: React.MouseEvent) => {
     if (!checkClick(e, grammar))
@@ -43,9 +43,9 @@ const GrammarOutput = (props: Props) => {
     setButtonDisabled(true);
     setStatus(["", ""]);
 
-    const newstrings = [] as string[];
     let hasWarn = false;
-    for (let i = 0; i < number; i++) {
+    let i;
+    for (i = 0; i < number; i++) {
       const str = grammar.next();
       if (str === undefined)
         break;
@@ -54,11 +54,11 @@ const GrammarOutput = (props: Props) => {
         setStatus(["warn", str.message]);
         break;
       }
-      newstrings.push(str);
+      strings.add(str);
     }
-    setStrings([...strings, ...newstrings]);
+    setStrings(new Set(strings));
 
-    if (newstrings.length < number && !hasWarn) {
+    if (i < number && !hasWarn) {
       setStatus(["info", "Grammmar exhausted"]);
       return;
     }
@@ -79,10 +79,10 @@ const GrammarOutput = (props: Props) => {
   };
 
   const grammarUpdated = () => {
-    setStrings([]);
+    setStrings(new Set());
 
     try {
-      grammar?.checkExpandable();
+      grammar?.checkValid();
       grammar?.clear();
       setButtonDisabled(false);
       setStatus(["", ""]);
@@ -93,7 +93,7 @@ const GrammarOutput = (props: Props) => {
   };
   useEffect(grammarUpdated, [grammar]);
 
-  const stringEls = useMemo(() => strings.map((str, ind) => (
+  const stringEls = useMemo(() => [...strings.values()].map((str, ind) => (
     <li key={ind} className="monospace">
       {str.toString().split(/\r\n|\r|\n|\\n/g).map((val, key) => (
         <span key={key}>{val}</span>

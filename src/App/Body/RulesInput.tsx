@@ -11,7 +11,7 @@ interface Props {
 
 const RulesInput = (props: Props) => {
   const { rules, setRules, setGrammar } = Query.useContainer();
-  const [status, setStatus] = useState(["",""]);
+  const [ status, setStatus ] = useState(["",""]);
   const timeout = useRef(0);
 
   const rulesChange = (e: React.ChangeEvent) => {

@@ -12,10 +12,11 @@ interface Props {
   value?: string;
   aria?: string;
   children?: JSX.Element[] | JSX.Element;
+  id?: string;
 }
 
 const Textarea = (props: Props) => {
-  let id = uniqueString();
+  const id = props.id || uniqueString();
   return (
     <div className={`${styles.area} ${props.className || ''}`}>
       {props.title && (

@@ -96,7 +96,8 @@ class FCSGrammar extends Grammar {
     this.initGenerator('S');
   }
 
-  checkExpandable() {
+  checkValid() {
+    super.checkValid();
     if (!('S' in this.rules))
       throw new Error("Startsymbol 'S' not found");
   }
