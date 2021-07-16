@@ -9,7 +9,6 @@ import textarea from './textarea.module.scss';
 
 interface Props {
   className?: string;
-  initialStrings?: string[];
 }
 
 const NUM_KEY = 'cfg_gen_number';
@@ -29,7 +28,7 @@ const checkClick = (e: React.MouseEvent, grammar: Grammar | undefined): grammar 
   return true;
 };
 
-const GrammarOutput = (props: Props) => {
+const GrammarOutput = ({ className }: Props) => {
   const { grammar } = Query.useContainer();
   const [ strings, setStrings ] = useState(new Set<string>());
   const [ buttonDisabled, setButtonDisabled ] = useState(false);
@@ -103,7 +102,7 @@ const GrammarOutput = (props: Props) => {
   
   return (
     <div
-      className={`${props.className || ''} status-${status[0]} App-bodyComponent`}
+      className={`${className || ''} status-${status[0]} App-bodyComponent`}
     >
       <div className={`${textarea.area} ${stylesBody.textarea}`}>
         <h2 className={textarea.title}>Strings</h2>
@@ -146,5 +145,5 @@ const GrammarOutput = (props: Props) => {
       </div>
     </div>
   )
-}
+};
 export default GrammarOutput;

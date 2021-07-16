@@ -78,11 +78,11 @@ class FCSGrammar extends Grammar {
     }
   }
 
-  private branchToTerminal(string: string, escape = false) {
+  private branchToTerminal(string: string, unescape = false) {
     return (
       string === "^" || string === "ε" || string === "" ?
         new EmptySymbol() :
-        new Terminal(escape ? string.replace(escapeMatch, "$1$2") : string)
+        new Terminal(unescape ? string.replace(escapeMatch, "$1$2") : string)
     );
   }
 

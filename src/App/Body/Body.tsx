@@ -1,20 +1,19 @@
 import React from 'react';
 import Query from '../Logic/querys';
 import styles from './Body.module.scss';
-
+import GrammarOutput from './GrammarOutput';
 import RulesInput from './RulesInput';
 import TextInput from './TextInput';
-import GrammarOutput from './GrammarOutput';
 
 
 interface Props {
   className?: string;
 }
 
-const Body = (props: Props) => {
+const Body = ({ className }: Props) => {
   return (
     <div
-      className={`${props.className || ''} ${styles.grid} App-body`}
+      className={`${className || ''} ${styles.grid} App-body`}
     >
       <Query.Provider initialState={window.location.hash}>
         <RulesInput
@@ -29,5 +28,5 @@ const Body = (props: Props) => {
       </Query.Provider>
     </div>
   )
-}
+};
 export default Body;

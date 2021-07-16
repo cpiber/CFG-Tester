@@ -9,17 +9,20 @@ interface Props {
   className?: string;
 }
 
-const RulesInput = (props: Props) => {
+const RulesInput = ({ className }: Props) => {
   const { rules, setRules, setGrammar } = Query.useContainer();
   const [ status, setStatus ] = useState(["",""]);
   const timeout = useRef(0);
 
   const rulesChange = (e: React.ChangeEvent) => {
+    if (!e.target) return;
     setRules((e.target as HTMLInputElement).value);
   };
 
   const clickGenerate = (e: React.MouseEvent) => {
+    if (!e.target) return;
     (e.target as HTMLElement).blur();
+
     loadRules();
   };
 
@@ -40,7 +43,7 @@ const RulesInput = (props: Props) => {
 
   return (
     <div
-      className={`${props.className || ''} status-${status[0]} App-bodyComponent`}
+      className={`${className || ''} status-${status[0]} App-bodyComponent`}
     >
       <Textarea
         className={styles.textarea}
@@ -48,6 +51,7 @@ const RulesInput = (props: Props) => {
         onChange={rulesChange}
         title="Rules"
         aria="Rules that describe the grammar"
+        placeholder="Enter rules here... e.g.&#10;S -> 1 | 2 | 3&#10;S -> 4 | 5 | 6"
       >
         <div className="row1">
           <div className="status">
@@ -65,5 +69,5 @@ const RulesInput = (props: Props) => {
       </Textarea>
     </div>
   )
-}
+};
 export default RulesInput;

@@ -1,5 +1,4 @@
 import ComparableSet, { Comparable } from './set';
-(window as any).ComparableSet = ComparableSet;
 
 export const branchMatch = /(\\*)\|/g;
 export const escapeMatch = /(\\(?:n|r|t|f))|\\(.)/g;
@@ -52,13 +51,13 @@ class ParseState<Sym extends Terminal | NonTerminal | undefined = Terminal | Non
   before: Rule;
   symbol: Sym;
   after: Rule;
-  k: number;
-  constructor(left: NonTerminal, before: Rule, symbol: Sym, after: Rule, k: number) {
+  origin: number;
+  constructor(left: NonTerminal, before: Rule, symbol: Sym, after: Rule, origin: number) {
     this.left = left;
     this.before = before;
     this.symbol = symbol;
     this.after = after;
-    this.k = k;
+    this.origin = origin;
   }
   isFinished(): this is ParseState<undefined> { return this.symbol === undefined || this.symbol instanceof EmptySymbol; }
   isTerminal(): this is ParseState<Terminal> { return this.symbol instanceof Terminal; }
@@ -66,7 +65,7 @@ class ParseState<Sym extends Terminal | NonTerminal | undefined = Terminal | Non
 
   hash() {
     const r = (prev: string, cur: Terminal | NonTerminal) => prev + cur.symbol;
-    return `${this.left.symbol}→${this.before.reduce(r, '')}•${this.symbol?.symbol || ''}${this.after.reduce(r, '')},${this.k}`;
+    return `${this.left.symbol}→${this.before.reduce(r, '')}•${this.symbol?.symbol || ''}${this.after.reduce(r, '')},${this.origin}`;
   }
 }
 type ParseStateSet = ComparableSet<ParseState>[];
@@ -91,14 +90,12 @@ export abstract class Grammar {
     // these are internal sanity checks, they should indeed never happen ;)
     for (const sym in this.rules) {
       const rules = this.rules[sym];
-      if (rules.length === 0)
-        throw new Error('Empty ruleset, this should never happen!');
       for (const rule of rules) {
         if (rule.length === 0)
           throw new Error('Empty rule, this should never happen!');
         if (rule.length === 1 && rule[0].symbol === '' && !(rule[0] instanceof EmptySymbol))
           throw new Error('Empty symbol that isn\'t an EmptySymbol, this should never happen!');
-        if (rule.length > 1 && rule.findIndex(s => s instanceof EmptySymbol) !== -1)
+        if (rule.length > 1 && rule.findIndex(s => s instanceof EmptySymbol || s.symbol.length === 0) !== -1)
           throw new Error('EmptySymbol found in a longer rule, this should never happen!');
       }
     }
@@ -180,7 +177,7 @@ export abstract class Grammar {
   }
 
   private completer(s: ParseState<undefined>, k: number, state: ParseStateSet) {
-    for (const n of state[s.k]) {
+    for (const n of state[s.origin]) {
       if (n.isFinished())
         continue;
       const ns = n as ParseState<Terminal | NonTerminal>;
@@ -202,7 +199,7 @@ export abstract class Grammar {
       // need to go to next symbol in rule
       // terminals can be multiple chars long, so pop first, otherwise go to next in rule
       if (s.symbol.symbol.length > 1) {
-        state[k+1].add(new ParseState(s.left, [...s.before, new Terminal(s.symbol.symbol[0])], new Terminal(s.symbol.symbol.slice(1)), [...s.after], s.k));
+        state[k+1].add(new ParseState(s.left, [...s.before, new Terminal(s.symbol.symbol[0])], new Terminal(s.symbol.symbol.slice(1)), [...s.after], s.origin));
       } else {
         this.nextInRule(s, k + 1, state);
       }
@@ -212,6 +209,6 @@ export abstract class Grammar {
   private nextInRule(n: ParseState<Terminal | NonTerminal>, k: number, state: ParseStateSet) {
     const nsym = n.after.length >= 1 ? n.after[0] : undefined;
     const nrul = n.after.length >= 1 ? n.after.slice(1) : [];
-    state[k].add(new ParseState(n.left, [...n.before, n.symbol], nsym, nrul, n.k));
+    state[k].add(new ParseState(n.left, [...n.before, n.symbol], nsym, nrul, n.origin));
   }
 }

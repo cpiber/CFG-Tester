@@ -1,8 +1,6 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-
-import styles from './bodyComponent.module.scss';
-
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Query from '../Logic/querys';
+import styles from './bodyComponent.module.scss';
 import Textarea from './Textarea';
 
 
@@ -10,17 +8,21 @@ interface Props {
   className?: string;
 }
 
-const TextInput = (props: Props) => {
+const TextInput = ({ className }: Props) => {
   const { input, setInput, grammar } = Query.useContainer();
   const [ status, setStatus ] = useState(["", ""]);
   const [ buttonDisabled, setButtonDisabled ] = useState(false);
   const timeout = useRef(0);
 
-  const inputChange = (e: React.ChangeEvent) =>
+  const inputChange = (e: React.ChangeEvent) => {
+    if (!e.target) return;
     setInput((e.target as HTMLInputElement).value);
+  }
   
   const clickMatch = (e: React.MouseEvent) => {
+    if (!e.target) return;
     (e.target as HTMLElement).blur();
+
     match();
   }
 
@@ -47,7 +49,7 @@ const TextInput = (props: Props) => {
 
   return (
     <div
-      className={`${props.className || ''} status-${status[0]} App-bodyComponent`}
+      className={`${className || ''} status-${status[0]} App-bodyComponent`}
     >
       <Textarea
         className={styles.textarea}
@@ -73,5 +75,5 @@ const TextInput = (props: Props) => {
       </Textarea>
     </div>
   )
-}
+};
 export default TextInput;

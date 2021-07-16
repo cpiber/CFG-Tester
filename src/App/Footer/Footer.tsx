@@ -5,7 +5,7 @@ interface Props {
   className?: string;
 }
 
-function Footer(props: Props) {
+const Footer = ({ className }: Props) => {
   const year = (new Date()).getFullYear().toString(),
     beginyear = process.env.REACT_APP_BEGIN_YEAR,
     author = process.env.REACT_APP_AUTHOR,
@@ -14,7 +14,7 @@ function Footer(props: Props) {
 
   return (
     <footer
-      className={`${props.className || ''} App-footer`}
+      className={`${className || ''} App-footer`}
     >
       {!beginyear || year === beginyear ? year : `${beginyear}-${year}`}
       {author && ` by ${author}`}
@@ -26,5 +26,5 @@ function Footer(props: Props) {
       )}
     </footer>
   );
-}
+};
 export default Footer;
