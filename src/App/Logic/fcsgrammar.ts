@@ -1,4 +1,4 @@
-import { EmptySymbol, escapeMatch, Grammar, NonTerminal, Rule, Terminal } from "./sharedgrammar";
+import { EmptySymbol, escapeMatch, Grammar, NonTerminal, Rule, Terminal } from "./grammar";
 
 const ruleMatchFCS = /^\s*([A-Z])\s*(?:->|→)\s*((?:.|\n)*)$/m;
 const nonTerminalMatchFCS = /(\\*)([A-Z])/g;

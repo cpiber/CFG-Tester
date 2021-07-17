@@ -117,3 +117,16 @@ test('keys and values return iterator for contents', () => {
   expect([...set.values()]).toEqual([t1, t2]);
   expect([...set.keys()]).toEqual([t1, t2]);
 });
+
+test('copying set works', () => {
+  const t1 = new Test('t1');
+  const t2 = new Test('t2');
+  set.add(t1);
+  set.add(t2);
+  expect(set.size).toBe(2);
+
+  const set2 = new ComparableSet(set);
+  expect(set2.size).toBe(2);
+  expect(set2.has(t1)).toBe(true);
+  expect(set2.has(t2)).toBe(true);
+});

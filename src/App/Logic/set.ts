@@ -3,7 +3,19 @@ export interface Comparable {
 }
 
 class ComparableSet<V extends Comparable> implements Set<V> {
-  private map: Map<string, V> = new Map();
+  private map: Map<string, V>;
+  clear: () => void;
+  keys: () => IterableIterator<V>;
+  values: () => IterableIterator<V>;
+  [Symbol.iterator]: () => IterableIterator<V>;
+
+  constructor(other?: ComparableSet<V>) {
+    this.map = other ? new Map(other.map) : new Map();
+    this.clear = this.map.clear.bind(this.map);
+    this.keys = this.map.values.bind(this.map);
+    this.values = this.map.values.bind(this.map);
+    this[Symbol.iterator] = this.values;
+  }
 
   get size() {
     return this.map.size;
@@ -30,10 +42,6 @@ class ComparableSet<V extends Comparable> implements Set<V> {
       return undefined;
     })();
   }
-  clear = this.map.clear.bind(this.map);
-  keys = this.map.values.bind(this.map);
-  values = this.map.values.bind(this.map);
-  [Symbol.iterator] = this.values;
-  [Symbol.toStringTag]: string;
+  get [Symbol.toStringTag]() { return "ComparableSet" };
 }
 export default ComparableSet;

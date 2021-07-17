@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Query from '../Logic/querys';
-import type { Grammar } from '../Logic/sharedgrammar';
+import type { Grammar } from '../Logic/grammar';
 import { clamp } from '../Logic/util';
 import stylesBody from './bodyComponent.module.scss';
 import styles from './GrammarOutput.module.scss';
@@ -58,7 +58,7 @@ const GrammarOutput = ({ className }: Props) => {
     setStrings(new Set(strings));
 
     if (i < number && !hasWarn) {
-      setStatus(["info", "Grammmar exhausted"]);
+      setStatus(["info", "Grammar exhausted"]);
       return;
     }
     setButtonDisabled(false);
@@ -94,8 +94,8 @@ const GrammarOutput = ({ className }: Props) => {
 
   const stringEls = useMemo(() => [...strings.values()].map((str, ind) => (
     <li key={ind} className="monospace">
-      {str.toString().split(/\r\n|\r|\n|\\n/g).map((val, key) => (
-        <span key={key}>{val}</span>
+      {str.split(/\r\n|\r|\n|\\n/g).map((val, key) => (
+        <span key={key} className={val === '' ? styles.empty : ''}>{val || 'ε'}</span>
       ))}
     </li>
   )), [strings]);

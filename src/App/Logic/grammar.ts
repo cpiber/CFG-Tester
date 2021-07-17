@@ -20,16 +20,19 @@ export class NonTerminal extends GSymbol {
   equals(other: GSymbol): boolean {
     return other instanceof NonTerminal && other.symbol === this.symbol;
   }
+  get [Symbol.toStringTag]() { return "NonTerminal" }
 }
 export class Terminal extends GSymbol {
   equals(other: GSymbol): boolean {
     return other instanceof Terminal && other.symbol === this.symbol;
   }
+  get [Symbol.toStringTag]() { return "Terminal" }
 }
 export class EmptySymbol extends Terminal {
   constructor() {
     super("");
   }
+  get [Symbol.toStringTag]() { return "EmptySymbol" }
 }
 
 export type Rule = (Terminal | NonTerminal)[];
@@ -47,7 +50,8 @@ class QueueElement {
   }
 }
 
-class ParseState<Sym extends Terminal | NonTerminal | undefined = Terminal | NonTerminal | undefined> implements Comparable {
+type AnySymbol = Terminal | NonTerminal | undefined;
+class ParseState<Sym extends AnySymbol = AnySymbol> implements Comparable {
   left: NonTerminal;
   before: Rule;
   symbol: Sym;
@@ -65,11 +69,13 @@ class ParseState<Sym extends Terminal | NonTerminal | undefined = Terminal | Non
   isNonTerminal(): this is ParseState<NonTerminal> { return this.symbol instanceof NonTerminal; }
 
   hash() {
-    const r = (prev: string, cur: Terminal | NonTerminal) => prev + cur.symbol;
-    return `${this.left.symbol}→${this.before.reduce(r, '')}•${this.symbol?.symbol || ''}${this.after.reduce(r, '')},${this.origin}`;
+    const str = (cur: AnySymbol) => (cur instanceof NonTerminal ? `\u0001${cur.symbol}\u0001` : cur?.symbol || '');
+    const r = (prev: string, cur: AnySymbol) => prev + str(cur);
+    return `${this.left.symbol}→${this.before.reduce(r, '')}\u0002•${str(this.symbol)}${this.after.reduce(r, '')}\u0003,${this.origin}`;
   }
 }
 type ParseStateSet = ComparableSet<ParseState>[];
+export type { ParseState };
 
 export abstract class Grammar {
   private gen: Generator<string | Error, undefined, never> | undefined = undefined;
@@ -103,8 +109,9 @@ export abstract class Grammar {
   }
 
   protected prepareRules(rules: string) {
+    // remove control characters and split into lines
     return rules.split(/\r\n|\r|\n/g).map((l, i, lines) => {
-      const line = l.trim();
+      const line = l.trim().replace(/[\u0000-\u001f\u007f-\u009F]/g, '');
       if (line === "") return null; // ignore empty lines
       if (line.match(escapeNewline)) {
         if (i + 1 === lines.length)
@@ -207,7 +214,7 @@ export abstract class Grammar {
         }
       }
     }
-
+    
     return state[str.length].has(topc);
   }
 
@@ -231,19 +238,29 @@ export abstract class Grammar {
     if (k === str.length) // nothing to scan if we're at the end of the string
       return;
     if (str[k] === s.symbol.symbol[0]) {
-      // need to go to next symbol in rule
-      // terminals can be multiple chars long, so pop first, otherwise go to next in rule
-      if (s.symbol.symbol.length > 1) {
-        state[k+1].add(new ParseState(s.left, [...s.before, new Terminal(s.symbol.symbol[0])], new Terminal(s.symbol.symbol.slice(1)), [...s.after], s.origin));
-      } else {
-        this.nextInRule(s, k + 1, state);
-      }
+      this.nextInRule(s, k + 1, state);
     }
   }
 
   private nextInRule(n: ParseState<Terminal | NonTerminal>, k: number, state: ParseStateSet) {
-    const nsym = n.after.length >= 1 ? n.after[0] : undefined;
-    const nrul = n.after.length >= 1 ? n.after.slice(1) : [];
-    state[k].add(new ParseState(n.left, [...n.before, n.symbol], nsym, nrul, n.origin));
+    // need to go to next symbol in rule
+    // terminals can be multiple chars long, so pop first, otherwise go to next in rule
+    const before = [...n.before];
+    if (n.symbol instanceof Terminal) {
+      const l = before.length - 1;
+      if (before[l] instanceof Terminal) {
+        before[l] = new Terminal(before[l].symbol + n.symbol.symbol[0]);
+      } else {
+        before.push(new Terminal(n.symbol.symbol[0]));
+      }
+    } else {
+      before.push(n.symbol);
+    }
+
+    if (n.symbol instanceof Terminal && n.symbol.symbol.length > 1) {
+      state[k].add(new ParseState(n.left, before, new Terminal(n.symbol.symbol.slice(1)), [...n.after], n.origin));
+    } else {
+      state[k].add(new ParseState(n.left, before, n.after[0], n.after.slice(1), n.origin));
+    }
   }
 }
