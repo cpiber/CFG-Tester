@@ -1,91 +1,29 @@
-import ComparableSet, { Comparable } from './set';
+import { EmptySymbol, NonTerminal, Parse, ParseState, ParseStateSet, QueueElement, Rule, Terminal } from './grammartypes';
+import ComparableSet from './set';
 
-export const branchMatch = /(\\*)\|/g;
-export const escapeMatch = /(\\(?:n|r|t|f))|\\(.)/g;
-export const escapeNewline = /(^|[^\\])(\\\\)*\\$/g;
+// eslint-disable-next-line
+export const control = /[\u0000-\u0008\u000E-\u001f\u007f-\u009F]/; // control except whitespace https://stackoverflow.com/a/46637343/
+export const whitespace = /\s/;
 
 const EXP_DEPTH = 'cfg_maxdepth'; // to prevent infinite recursion
 const EXP_NONTERM = 'cfg_maxnonterm'; // maximum non-terminals in a row
 const EXP_ITER = 'cfg_iter'; // maximum iterations between yields per call
-
-abstract class GSymbol {
-  symbol: string;
-  constructor(symbol: string) {
-    this.symbol = symbol;
-  }
-
-  abstract equals(other: GSymbol): boolean;
-}
-export class NonTerminal extends GSymbol {
-  equals(other: GSymbol): boolean {
-    return other instanceof NonTerminal && other.symbol === this.symbol;
-  }
-  get [Symbol.toStringTag]() { return "NonTerminal" }
-}
-export class Terminal extends GSymbol {
-  equals(other: GSymbol): boolean {
-    return other instanceof Terminal && other.symbol === this.symbol;
-  }
-  get [Symbol.toStringTag]() { return "Terminal" }
-}
-export class EmptySymbol extends Terminal {
-  constructor() {
-    super("");
-  }
-  get [Symbol.toStringTag]() { return "EmptySymbol" }
-}
-
-export type Rule = (Terminal | NonTerminal)[];
-
-class QueueElement {
-  rule: Rule;
-  before: string;
-  depth: number;
-  nonTerminals: number;
-  constructor(rule: Rule, before = "", depth = 0, nonTerminals = 0) {
-    this.rule = rule;
-    this.before = before;
-    this.depth = depth;
-    this.nonTerminals = nonTerminals;
-  }
-}
-
-type AnySymbol = Terminal | NonTerminal | undefined;
-class ParseState<Sym extends AnySymbol = AnySymbol> implements Comparable {
-  left: NonTerminal;
-  before: Rule;
-  symbol: Sym;
-  after: Rule;
-  origin: number;
-  constructor(left: NonTerminal, before: Rule, symbol: Sym, after: Rule, origin: number) {
-    this.left = left;
-    this.before = before;
-    this.symbol = symbol;
-    this.after = after;
-    this.origin = origin;
-  }
-  isFinished(): this is ParseState<undefined> { return this.symbol === undefined || this.symbol instanceof EmptySymbol; }
-  isTerminal(): this is ParseState<Terminal> { return this.symbol instanceof Terminal; }
-  isNonTerminal(): this is ParseState<NonTerminal> { return this.symbol instanceof NonTerminal; }
-
-  hash() {
-    const str = (cur: AnySymbol) => (cur instanceof NonTerminal ? `\u0001${cur.symbol}\u0001` : cur?.symbol || '');
-    const r = (prev: string, cur: AnySymbol) => prev + str(cur);
-    return `${this.left.symbol}→${this.before.reduce(r, '')}\u0002•${str(this.symbol)}${this.after.reduce(r, '')}\u0003,${this.origin}`;
-  }
-}
-type ParseStateSet = ComparableSet<ParseState>[];
-export type { ParseState };
 
 export abstract class Grammar {
   private gen: Generator<string | Error, undefined, never> | undefined = undefined;
   private maxDepth = +(window.localStorage.getItem(EXP_DEPTH) || 20);
   private maxNonTerms = +(window.localStorage.getItem(EXP_NONTERM) || 10);
   private maxIter = +(window.localStorage.getItem(EXP_ITER) || 5000);
+  protected currentState: Parse;
 
   protected rules: { [key: string]: Rule[] } = {};
   abstract clear(): void;
   abstract matches(str: string): boolean;
+  protected abstract checkParseValid(): void;
+
+  constructor() {
+    this.currentState = new Parse(() => { /* */ });
+  }
   
   next(): string | Error | undefined {
     if (!this.gen)
@@ -108,39 +46,82 @@ export abstract class Grammar {
     }
   }
 
-  protected prepareRules(rules: string) {
-    // remove control characters and split into lines
-    return rules.split(/\r\n|\r|\n/g).map((l, i, lines) => {
-      const line = l.trim().replace(/[\u0000-\u001f\u007f-\u009F]/g, '');
-      if (line === "") return null; // ignore empty lines
-      if (line.match(escapeNewline)) {
-        if (i + 1 === lines.length)
-          return line.slice(0, line.length - 1);
-        const newline = line.slice(0, line.length - 1) + lines[i + 1].trim();
-        lines[i + 1] = "";
-        return newline;
+  protected parseRules(rules: string, start: Parse, escape: string | RegExp) {
+    this.currentState = start;
+
+    let line = 0, column = 0;
+    let literal = false;
+    try {
+      for (let i = 0; (column++, i < rules.length); i++) {
+        const char = rules[i];
+        if (char.match(control))
+          console.debug(`Purged control character ${char} at ${i}`);
+        else if (char.match(escape))
+          literal = true;
+        else if (char === '\n') {
+          column = 0;
+          line ++;
+          if (!literal)
+            this.endLine(start);
+        } else {
+          this.currentState.handle.call(this, char, literal);
+          literal = false;
+        }
       }
-      return line;
-    });
+      this.endLine(start);
+    } catch (e) {
+      console.debug(this.currentState);
+      throw new Error(`${(e as Error).message || e} at line ${line + 1}, column ${column}`);
+    }
   }
 
-  protected toBranches(branch: string, branchToTerminal: (s: string) => Terminal) {
-    const prep = (str: string) => str.trim().replace(/\\n/g, "\n").replace(/\\r/g, "\r").replace(/\\t/g, "\t").replace(/\\f/g, "\f");
-    let newbranches: Terminal[] = [],
-        bmatch: RegExpExecArray | null,
-        lastIndex = 0;
-    while ((bmatch = branchMatch.exec(branch)) !== null) {
-      // even number of backslashes means they are not
-      // escaping the |
-      if (bmatch[1].length % 2 === 0) {
-        const before = branch.substring(lastIndex, bmatch.index + bmatch[1].length);
-        newbranches.push(branchToTerminal(prep(before)));
-        lastIndex = branchMatch.lastIndex;
-      }
+  protected checkBranch(char: string, literal: boolean, ignoreWhitespace: boolean) {
+    if (this.currentState.currentInput === '' && !literal && !ignoreWhitespace && char.match(whitespace))
+      return null;
+    if (char === '|' && !literal) {
+      this.endLine();
+      return null;
     }
-    const after = branch.substring(lastIndex);
-    newbranches.push(branchToTerminal(prep(after)));
-    return newbranches;
+    if (char.match(whitespace)) {
+      this.currentState.whitespace += char;
+      return null;
+    }
+    if (literal)
+      return this.toSpecial(char);
+    return char;
+  }
+
+  private toSpecial(char: string) {
+    if (char === 'n')
+      return '\n';
+    if (char === 't')
+      return '\t';
+    if (char === 'r')
+      return '\r';
+    if (char === 'f')
+      return '\f';
+    return char;
+  }
+
+  private endLine(start?: Parse) {
+    this.checkParseValid();
+    if (this.currentState.currentSymbol === undefined)
+      return;
+    const s = this.currentState.currentSymbol.symbol;
+    const t = Terminal.construct(this.currentState.currentInput);
+    if (this.currentState.rule.length === 0 || !(t instanceof EmptySymbol))
+      this.currentState.rule.push(t);
+    if (s in this.rules)
+      this.rules[s].push(this.currentState.rule);
+    else
+      this.rules[s] = [this.currentState.rule];
+    if (start)
+      this.currentState = start;
+    else {
+      this.currentState.currentInput = '';
+      this.currentState.whitespace = '';
+      this.currentState.rule = [];
+    }
   }
 
   protected initGenerator(startsym: string) {
