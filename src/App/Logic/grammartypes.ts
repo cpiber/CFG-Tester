@@ -1,9 +1,7 @@
 import ComparableSet, { Comparable } from "./set";
 
 abstract class GSymbol {
-  symbol: string;
-  constructor(symbol: string) {
-    this.symbol = symbol;
+  constructor(public symbol: string) {
   }
 
   abstract equals(other: GSymbol): boolean;
@@ -37,25 +35,12 @@ export type AnySymbol = Terminal | NonTerminal | undefined;
 export type Rule = (Terminal | NonTerminal)[];
 
 export class QueueElement {
-  rule: Rule;
-  before: string;
-  depth: number;
-  nonTerminals: number;
-  constructor(rule: Rule, before = "", depth = 0, nonTerminals = 0) {
-    this.rule = rule;
-    this.before = before;
-    this.depth = depth;
-    this.nonTerminals = nonTerminals;
+  constructor(public rule: Rule, public before = "", public depth = 0, public nonTerminals = 0) {
   }
 }
 
 export class ParseState<Sym extends AnySymbol = AnySymbol> implements Comparable {
-  left: NonTerminal;
-  before: Rule;
-  symbol: Sym;
-  after: Rule;
-  origin: number;
-  constructor(left: NonTerminal, before: Rule, symbol: Sym, after: Rule, origin: number) {
+  constructor(public left: NonTerminal, public before: Rule, public symbol: Sym, public after: Rule, public origin: number) {
     this.left = left;
     this.before = before;
     this.symbol = symbol;
@@ -76,15 +61,7 @@ export type ParseStateSet = ComparableSet<ParseState>[];
 
 export type ParseHandle = (char: string, literal: boolean) => void;
 export class Parse {
-  handle: ParseHandle;
-  currentSymbol: NonTerminal | undefined;
-  currentInput = "";
-  whitespace = "";
   rule: Rule = [];
-  constructor(handle: ParseHandle, symbol?: NonTerminal, input?: string, whitespace?: string) {
-    this.handle = handle;
-    this.currentSymbol = symbol;
-    this.currentInput = input || '';
-    this.whitespace = whitespace || '';
+  constructor(public handle: ParseHandle, public currentSymbol?: NonTerminal, public currentInput = '', public whitespace = '') {
   }
 }

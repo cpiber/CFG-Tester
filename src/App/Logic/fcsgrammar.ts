@@ -24,7 +24,7 @@ class FCSGrammar extends Grammar {
       return; // ignore whitespace
     }
     if (!char.match(nonTerminal) || this.currentState.currentSymbol !== undefined)
-      throw new Error(`Unexpected '${char}', expected Terminal`);
+      throw new Error(`Unexpected '${char}', expected Non-Terminal`);
     this.currentState = new Parse(this.parseIndicator, new NonTerminal(char));
   }
 

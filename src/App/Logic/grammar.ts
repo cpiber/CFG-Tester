@@ -195,7 +195,7 @@ export abstract class Grammar {
         }
       }
     }
-    
+
     return state[str.length].has(topc);
   }
 
