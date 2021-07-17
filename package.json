@@ -1,8 +1,16 @@
 {
   "name": "cfg-tester",
   "version": "0.1.0",
-  "private": true,
   "dependencies": {
+    "query-string": "^6.10.1",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-modal": "^3.11.1",
+    "unique-string": "^2.0.0",
+    "unstated-next": "^1.1.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.13.0",
     "@testing-library/dom": "^6.11.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -10,17 +18,12 @@
     "@types/jest": "^24.9.0",
     "@typescript-eslint/eslint-plugin": "^2.16.0",
     "@typescript-eslint/parser": "^2.16.0",
-    "eslint": "^7.15.0",
+    "eslint": "^5.0.0 || ^6.0.0",
     "gh-pages": "^2.2.0",
+    "identity-obj-proxy": "^3.0.0",
     "node-sass": "^4.13.0",
-    "query-string": "^6.10.1",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "react-modal": "^3.11.1",
     "react-scripts": "^4.0.1",
-    "typescript": "^3.7.4",
-    "unique-string": "^2.0.0",
-    "unstated-next": "^1.1.0"
+    "typescript": "^3.7.4"
   },
   "scripts": {
     "predeploy": "npm run build",

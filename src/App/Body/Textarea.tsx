@@ -17,10 +17,13 @@ interface Props {
 const Textarea = ({ id, className, title, placeholder, onChange, value, aria, children }: Props) => {
   const id_ = id || uniqueString();
   return (
-    <div className={`${styles.area} ${className || ''}`}>
+    <div className={`${styles.area} ${className || ''}`} data-testid="container">
       {title && (
         <h2 className={styles.title}>
-          <label htmlFor={id_}>{title}</label>
+          <label
+            htmlFor={id_}
+            data-testid="label"
+          >{title}</label>
         </h2>
       )}
       <textarea

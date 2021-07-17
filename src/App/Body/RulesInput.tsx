@@ -44,6 +44,7 @@ const RulesInput = ({ className }: Props) => {
   return (
     <div
       className={`${className || ''} status-${status[0]} App-bodyComponent`}
+      data-testid="rules-input"
     >
       <Textarea
         className={styles.textarea}
@@ -54,7 +55,7 @@ const RulesInput = ({ className }: Props) => {
         placeholder="Enter rules here... e.g.&#10;S -> 1 | 2 | 3&#10;S -> 4 | 5 | 6"
       >
         <div className="row1">
-          <div className="status">
+          <div className="status" role="status">
             {status[1]}
           </div>
         </div>

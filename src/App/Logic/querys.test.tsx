@@ -4,21 +4,21 @@ import Query from './querys';
 
 
 const TestComponent = () => {
-  let query = Query.useContainer();
+  const { rules, setRules, input, setInput } = Query.useContainer();
 
   return (
     <React.Fragment>
       <input
         data-testid="rules"
         onChange={(e: React.ChangeEvent) =>
-          query.setRules((e.target as HTMLInputElement).value)}
-        value={query.rules}
+          setRules((e.target as HTMLInputElement).value)}
+        value={rules}
       />
       <input
         data-testid="input"
         onChange={(e: React.ChangeEvent) =>
-          query.setInput((e.target as HTMLInputElement).value)}
-        value={query.input}
+          setInput((e.target as HTMLInputElement).value)}
+        value={input}
       />
     </React.Fragment>
   )

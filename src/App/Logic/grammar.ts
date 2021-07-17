@@ -70,7 +70,6 @@ export abstract class Grammar {
       }
       this.endLine(start);
     } catch (e) {
-      console.debug(this.currentState);
       throw new Error(`${(e as Error).message || e} at line ${line + 1}, column ${column}`);
     }
   }
