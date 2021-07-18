@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, wait } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import Query from './querys';
 
@@ -53,8 +53,8 @@ test('hash sets rules and input', async () => {
     listenerMap['hashchange'].forEach(cb => cb(new HashChangeEvent('hashchange')));
   });
 
-  await wait(() => expect((getByTestId('rules') as HTMLInputElement).value).toBe(expectedRules));
-  await wait(() => expect((getByTestId('input') as HTMLInputElement).value).toBe(expectedInput));
+  await waitFor(() => expect((getByTestId('rules') as HTMLInputElement).value).toBe(expectedRules));
+  await waitFor(() => expect((getByTestId('input') as HTMLInputElement).value).toBe(expectedInput));
 });
 
 test('updating state sets hash', async () => {
@@ -67,7 +67,7 @@ test('updating state sets hash', async () => {
   fireEvent.change(getByTestId('rules'), { target: { value: expectedRules } });
   fireEvent.change(getByTestId('input'), { target: { value: expectedInput } });
 
-  await wait(() =>
+  await waitFor(() =>
     expect(window.location.hash).toBe(
       "#input=" + expectedInput + "&rules=" + expectedRules
     )
@@ -81,6 +81,6 @@ test('rules and input are set initially', async () => {
   const hash = "rules=" + expectedRules + "&input=" + expectedInput;
   const { getByTestId } = renderTest(hash);
 
-  await wait(() => expect((getByTestId('rules') as HTMLInputElement).value).toBe(expectedRules));
-  await wait(() => expect((getByTestId('input') as HTMLInputElement).value).toBe(expectedInput));
+  await waitFor(() => expect((getByTestId('rules') as HTMLInputElement).value).toBe(expectedRules));
+  await waitFor(() => expect((getByTestId('input') as HTMLInputElement).value).toBe(expectedInput));
 });

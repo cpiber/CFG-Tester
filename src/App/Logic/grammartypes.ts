@@ -58,6 +58,8 @@ export class ParseState<Sym extends AnySymbol = AnySymbol> implements Comparable
   }
 }
 export type ParseStateSet = ComparableSet<ParseState>[];
+export type InferSym<T extends ParseState> = T extends ParseState<infer U> ? U : never;
+export type NonNull<T extends ParseState> = ParseState<NonNullable<InferSym<T>>>;
 
 export type ParseHandle = (char: string, literal: boolean) => void;
 export class Parse {

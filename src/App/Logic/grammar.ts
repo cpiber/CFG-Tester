@@ -1,7 +1,7 @@
-import { EmptySymbol, NonTerminal, Parse, ParseState, ParseStateSet, QueueElement, Rule, Terminal } from './grammartypes';
+import { EmptySymbol, NonTerminal, Parse, ParseState, NonNull as ParseStateNonNull, ParseStateSet, QueueElement, Rule, Terminal } from './grammartypes';
 import ComparableSet from './set';
 
-// eslint-disable-next-line
+// eslint-disable-next-line no-control-regex
 export const control = /[\u0000-\u0008\u000E-\u001f\u007f-\u009F]/; // control except whitespace https://stackoverflow.com/a/46637343/
 export const whitespace = /\s/;
 
@@ -202,7 +202,7 @@ export abstract class Grammar {
     for (const n of state[s.origin]) {
       if (n.isFinished())
         continue;
-      const ns = n as ParseState<Terminal | NonTerminal>;
+      const ns = n as ParseStateNonNull<typeof n>;
       if (ns.symbol.equals(s.left))
         this.nextInRule(ns, k, state);
     }

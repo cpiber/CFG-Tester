@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, wait } from '@testing-library/react';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import React, { useEffect } from 'react';
 import type { Grammar } from '../Logic/grammar';
 import { Terminal } from '../Logic/grammartypes';
@@ -35,7 +35,7 @@ test('input generates grammar and sets status', async () => {
   const { getByTestId, getByRole } = renderTest(mock);
 
   fireEvent.change(getByRole('textbox'), { target: { value: 'S -> 1' }});
-  await wait(() => {
+  await waitFor(() => {
     const gr = g();
     expect(gr).not.toBe(undefined);
     expect(gr["rules"]).toEqual({
@@ -46,7 +46,7 @@ test('input generates grammar and sets status', async () => {
   expect(getByTestId('rules-input')).toHaveClass('status-ok');
 
   fireEvent.change(getByRole('textbox'), { target: { value: ' -> 1' }});
-  await wait(() => {
+  await waitFor(() => {
     expect(getByTestId('rules-input')).toHaveClass('status-error');
   });
   expect(getByRole('status')).toHaveTextContent(`Error: Unexpected '-', expected Non-Terminal at line 1, column 2`);
@@ -57,12 +57,12 @@ test('button creates new object', async () => {
   const { getByRole } = renderTest(mock);
 
   fireEvent.change(getByRole('textbox'), { target: { value: 'S -> 1' }});
-  await wait(() => {
+  await waitFor(() => {
     expect(g()).not.toBe(undefined);
   });
   const calls = mock.mock.calls.length;
   fireEvent.click(getByRole('button'));
-  await wait(() => {
+  await waitFor(() => {
     expect(mock.mock.calls.length).not.toBe(calls);
   });
 });
