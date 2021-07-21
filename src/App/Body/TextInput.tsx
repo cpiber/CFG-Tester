@@ -15,12 +15,10 @@ const TextInput = ({ className }: Props) => {
   const timeout = useRef(0);
 
   const inputChange = (e: React.ChangeEvent) => {
-    if (!e.target) return;
     setInput((e.target as HTMLInputElement).value);
   }
   
   const clickMatch = (e: React.MouseEvent) => {
-    if (!e.target) return;
     (e.target as HTMLElement).blur();
 
     match();
@@ -50,6 +48,7 @@ const TextInput = ({ className }: Props) => {
   return (
     <div
       className={`${className || ''} status-${status[0]} App-bodyComponent`}
+      data-testid="text-input"
     >
       <Textarea
         className={styles.textarea}
@@ -59,7 +58,7 @@ const TextInput = ({ className }: Props) => {
         aria="Input to match with grammar"
       >
         <div className="row1">
-          <span className="status">
+          <span className="status" role="status">
             {status[1]}
           </span>
         </div>

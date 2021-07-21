@@ -17,7 +17,6 @@ const n_max = 999;
 const n = clamp(+(window.localStorage.getItem(NUM_KEY) || 15), n_min, n_max);
 
 const checkClick = (e: React.MouseEvent, grammar: Grammar | undefined): grammar is Grammar => {
-  if (!e.target) return false;
   const target = e.target as HTMLElement;
   
   if (target.tagName === "INPUT") return false;
@@ -44,7 +43,8 @@ const GrammarOutput = ({ className }: Props) => {
 
     let hasWarn = false;
     let i;
-    for (i = 0; i < number; i++) {
+    const startSize = strings.size;
+    for (i = 0; i < number; i = strings.size - startSize) {
       const str = grammar.next();
       if (str === undefined)
         break;
@@ -65,7 +65,6 @@ const GrammarOutput = ({ className }: Props) => {
   };
 
   const clickClear = (e: React.MouseEvent) => {
-    if (!e.target) return;
     (e.target as HTMLElement).blur();
 
     grammarUpdated();
@@ -103,17 +102,18 @@ const GrammarOutput = ({ className }: Props) => {
   return (
     <div
       className={`${className || ''} status-${status[0]} App-bodyComponent`}
+      data-testid="output"
     >
       <div className={`${textarea.area} ${stylesBody.textarea}`}>
         <h2 className={textarea.title}>Strings</h2>
         <div className={styles.strings}>
-          <ul>
+          <ul data-testid="strings">
             {stringEls}
           </ul>
         </div>
         <div className="children">
           <div className="row1">
-            <span className="status">
+            <span className="status" role="status">
               {status[1]}
             </span>
           </div>
@@ -123,6 +123,7 @@ const GrammarOutput = ({ className }: Props) => {
               onClick={clickGenerate}
               disabled={buttonDisabled}
               aria-label="Get more strings"
+              data-testid="generate"
             >
               Get <input
                 type="number"
@@ -131,12 +132,14 @@ const GrammarOutput = ({ className }: Props) => {
                 value={number}
                 onChange={updateNum}
                 aria-label="Number of strings to get"
+                data-testid="number"
                 /> more
             </button>
             <button
               className="button secondary"
               onClick={clickClear}
               aria-label="Clear strings"
+              data-testid="clear"
             >
               Clear
             </button>

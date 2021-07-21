@@ -15,12 +15,10 @@ const RulesInput = ({ className }: Props) => {
   const timeout = useRef(0);
 
   const rulesChange = (e: React.ChangeEvent) => {
-    if (!e.target) return;
     setRules((e.target as HTMLInputElement).value);
   };
 
   const clickGenerate = (e: React.MouseEvent) => {
-    if (!e.target) return;
     (e.target as HTMLElement).blur();
 
     loadRules();

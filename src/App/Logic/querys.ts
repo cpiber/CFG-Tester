@@ -1,4 +1,4 @@
-import queryString from 'query-string';
+import { stringify, parse } from 'query-string';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createContainer } from 'unstated-next';
 import type { Grammar } from './grammar';
@@ -10,19 +10,19 @@ declare global {
 }
 
 const useQuery = (initialQuery = "") => {
-  const parse = (query: string) => {
-    const parsed = queryString.parse(query);
+  const parseQ = (query: string) => {
+    const parsed = parse(query);
     const nr = typeof(parsed.rules) === "string" ? parsed.rules : "";
     const ni = typeof(parsed.input) === "string" ? parsed.input : "";
     return { rules: nr, input: ni };
   };
 
-  const [state, setState] = useState(parse(initialQuery));
+  const [state, setState] = useState(parseQ(initialQuery));
   const [grammar, setGrammar] = useState(undefined as Grammar | undefined);
 
   const setRules = useCallback((nr: string) => setState({ ...state, rules: nr }), [state, setState]);
   const setInput = useCallback((ni: string) => setState({ ...state, input: ni }), [state, setState]);
-  const updateQuery = useCallback((query: string) => setState(parse(query)), [setState]);
+  const updateQuery = useCallback((query: string) => setState(parseQ(query)), [setState]);
 
   // detect hash changes, cleanup listener on unmount
   useEffect(() => {
@@ -34,7 +34,7 @@ const useQuery = (initialQuery = "") => {
   // reflect changes in hash, debounce
   const timeout = useRef(0);
   useEffect(() => {
-    timeout.current = window.setTimeout(() => window.location.hash = queryString.stringify(state), 100);
+    timeout.current = window.setTimeout(() => window.location.hash = stringify(state), 100);
     return () => window.clearTimeout(timeout.current);
   }, [state]);
 

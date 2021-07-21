@@ -1,7 +1,7 @@
 import { Grammar } from "./grammar";
 import { EmptySymbol, NonTerminal, Rule, Terminal } from "./grammartypes";
 
-class TestGrammar extends Grammar {
+export class TestGrammar extends Grammar {
   constructor(rules: { [key: string]: Rule[] }) {
     super();
     this.rules = rules;
@@ -21,6 +21,26 @@ class TestGrammar extends Grammar {
     super.checkValid();
     if (!('Start' in this.rules))
       throw new Error("Startsymbol 'Start' not found");
+  }
+}
+
+export class NonFunctionalGrammar extends Grammar {
+  constructor(private valid: jest.Mock) {
+    super();
+  }
+
+  clear(): void {
+    // do nothing
+  }
+  matches(_: string): boolean {
+    return true;
+  }
+  protected checkParseValid(): void {
+    throw new Error('Method not implemented.');
+  }
+  checkValid() {
+    super.checkValid();
+    this.valid();
   }
 }
 
@@ -174,4 +194,19 @@ describe('matching', () => {
       expect(grammar.matches(v)).toBe(true);
     });
   });
+});
+
+test('stringTags are correct', () => {
+  expect(new Terminal('')[Symbol.toStringTag]).toBe("Terminal");
+  expect(new NonTerminal('')[Symbol.toStringTag]).toBe("NonTerminal");
+  expect(new EmptySymbol()[Symbol.toStringTag]).toBe("EmptySymbol");
+});
+
+test('constructing and comparing symbols correct', () => {
+  expect(Terminal.construct('')).toEqual(new EmptySymbol());
+  expect(Terminal.construct(' ')).toEqual(new Terminal(' '));
+
+  expect(new Terminal(' ').equals(new Terminal(' '))).toBeTruthy();
+  expect(new Terminal('').equals(new EmptySymbol())).toBeTruthy();
+  expect(new Terminal(' ').equals(new NonTerminal(' '))).toBeFalsy();
 });

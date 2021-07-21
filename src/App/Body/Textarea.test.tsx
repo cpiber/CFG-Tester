@@ -19,13 +19,13 @@ test('title doesn\'t exist if not given', () => {
 test('ids are correctly set (generated)', () => {
   const { getByRole, getByTestId } = render(<Textarea title="title" />);
   const id = getByRole('textbox').id;
+  expect(id).not.toBe('');
   expect(getByTestId('label')).toHaveAttribute('for', id);
 });
 
 test('ids are correctly set (given)', () => {
   const id = 'id';
   const { getByRole, getByTestId } = render(<Textarea title="title" id={id} />);
-  expect(id).not.toBe('');
   expect(getByRole('textbox')).toHaveAttribute('id', id);
   expect(getByTestId('label')).toHaveAttribute('for', id);
 });
