@@ -47,6 +47,6 @@ test('changes are reported', () => {
   const { getByRole } = render(<Textarea onChange={mock} />);
   const newval = 'test';
   fireEvent.change(getByRole('textbox'), { target: { value: newval } });
-  expect(mock.mock.calls.length).toBe(1);
-  expect(mock.mock.results[0].value).toBe(newval);
+  expect(mock).toHaveBeenCalledTimes(1);
+  expect(mock).toHaveReturnedWith(newval);
 });

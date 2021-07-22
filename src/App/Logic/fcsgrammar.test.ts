@@ -153,8 +153,8 @@ describe('per-grammar overrides', () => {
     g["initGenerator"] = mock.mockImplementationOnce(a => a);
     g["match"] = mock.mockImplementationOnce((_, a) => a);
     g.clear();
-    expect(mock.mock.results.pop()?.value).toBe('S');
+    expect(mock).toHaveReturnedWith('S');
     g.matches('test');
-    expect(mock.mock.results.pop()?.value).toBe('S');
+    expect(mock).toHaveReturnedWith('S');
   });
 });

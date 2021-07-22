@@ -48,7 +48,7 @@ test('input generates grammar and sets status', async () => {
   mock.mockImplementationOnce((grammar: Grammar) => grammar["rules"]);
   fireEvent.change(getByRole('textbox'), { target: { value: 'S -> 1' }});
   act(jest.runAllTimers);
-  expect(mock.mock.results.pop()!.value).toEqual({
+  expect(mock).toHaveReturnedWith({
     S: [[new Terminal('1')]],
   });
 
@@ -69,5 +69,5 @@ test('button creates new object', async () => {
   const calls = mock.mock.calls.length;
   fireEvent.click(getByRole('button'));
   act(jest.runAllTimers);
-  expect(mock.mock.calls.length).not.toBe(calls);
+  expect(mock).not.toHaveBeenCalledTimes(calls);
 });

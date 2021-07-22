@@ -54,7 +54,7 @@ test('input field updates query', () => {
   mock.mockImplementationOnce((input: string) => input);
   fireEvent.change(getByRole('textbox'), { target: { value: text } });
   act(jest.runAllTimers);
-  expect(mock.mock.results.pop()!.value).toBe(text);
+  expect(mock).toHaveReturnedWith(text);
 });
 
 test('setting input tries to match and sets status', () => {
