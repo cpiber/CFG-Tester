@@ -1,3 +1,23 @@
+[![Build](https://github.com/cpiber/CFG-Tester/actions/workflows/node.js.yml/badge.svg)](https://github.com/cpiber/CFG-Tester/actions/workflows/node.js.yml)
+[![Dependencies](https://status.david-dm.org/gh/cpiber/CFG-Tester.svg)](https://david-dm.org/cpiber/CFG-Tester)
+[![DevDependencies](https://status.david-dm.org/gh/cpiber/CFG-Tester.svg?type=dev)](https://david-dm.org/cpiber/CFG-Tester?type=dev)
+[![codecov](https://codecov.io/gh/cpiber/CFG-Tester/branch/master/graph/badge.svg?token=k09ukOWzD4)](https://codecov.io/gh/cpiber/CFG-Tester)
+
+# CFG-Tester
+
+CFGs (short for Context-Free Grammars) are an essential part of CS. This project aims to make them more accessible by providing a playground.
+
+In the app, a grammar can be entered (more syntaxes soon™) and its expansion observed. There is also a box for checking if the grammar accepts a given input or not.
+
+The app is available [here](https://cpiber.github.io/CFG-Tester).
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
