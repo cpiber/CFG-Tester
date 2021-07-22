@@ -1,4 +1,5 @@
 import React from 'react';
+import { author, beginyear, source } from "./data";
 
 
 interface Props {
@@ -7,14 +8,12 @@ interface Props {
 
 const Footer = ({ className }: Props) => {
   const year = (new Date()).getFullYear().toString(),
-    beginyear = process.env.REACT_APP_BEGIN_YEAR,
-    author = process.env.REACT_APP_AUTHOR,
-    source = process.env.REACT_APP_GITHUB_URL,
     divider = " :: ";
 
   return (
     <footer
       className={`${className || ''} App-footer`}
+      data-testid="footer"
     >
       {!beginyear || year === beginyear ? year : `${beginyear}-${year}`}
       {author && ` by ${author}`}

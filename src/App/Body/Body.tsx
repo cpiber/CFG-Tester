@@ -14,6 +14,7 @@ const Body = ({ className }: Props) => {
   return (
     <div
       className={`${className || ''} ${styles.grid} App-body`}
+      data-testid="body"
     >
       <Query.Provider initialState={window.location.hash}>
         <RulesInput

@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render } from '@testing-library/react';
 import React, { useEffect } from 'react';
 import type { Grammar } from '../Logic/grammar';
 import { NonFunctionalGrammar, TestGrammar } from '../Logic/grammar.test';

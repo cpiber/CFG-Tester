@@ -7,7 +7,7 @@ import Header from './Header/Header';
 
 const App = () => {
   return (
-    <div className="App">
+    <div className="App" data-testid="app">
       <Header />
       <Body />
       <Footer />
