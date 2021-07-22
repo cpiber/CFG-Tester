@@ -97,7 +97,7 @@ class FCSGrammar extends Grammar {
   }
 
   matches(str: string) {
-    return super.match(str, 'S');
+    return this.match(str, 'S');
   }
 }
 

@@ -1,5 +1,6 @@
 import FCSGrammar from "./fcsgrammar";
 import { EmptySymbol, NonTerminal, Terminal } from "./grammartypes";
+import each from 'jest-each';
 
 let debug: typeof console.debug;
 beforeAll(() => {
@@ -10,122 +11,150 @@ afterAll(() => {
   console.debug = debug;
 });
 
-test('simple rules', () => {
-  const input1 = `S -> 1 | 2`;
-  const g1 = new FCSGrammar(input1);
-  expect(g1['rules']).toEqual({
-    S: [
-      [new Terminal('1')],
-      [new Terminal('2')],
-    ],
-  });
-
-  const input2 = `S -> 1
-                  S -> 2`;
-  const g2 = new FCSGrammar(input2);
-  expect(g2['rules']).toEqual({
-    S: [
-      [new Terminal('1')],
-      [new Terminal('2')],
-    ],
-  });
-
-  const input3 = `S -> 1
-                  S -> 2 | 3`;
-  const g3 = new FCSGrammar(input3);
-  expect(g3['rules']).toEqual({
-    S: [
-      [new Terminal('1')],
-      [new Terminal('2')],
-      [new Terminal('3')],
-    ],
-  });
-
-  const input4 = `S -> A
-                  A -> 2`;
-  const g4 = new FCSGrammar(input4);
-  expect(g4['rules']).toEqual({
-    S: [
-      [new NonTerminal('A')],
-    ],
-    A: [
-      [new Terminal('2')],
-    ],
-  });
-});
-
-test('special cases', () => {
-  const input1 = `S -> 1 | 2\\n`;
-  const g1 = new FCSGrammar(input1);
-  expect(g1['rules']).toEqual({
-    S: [
-      [new Terminal('1')],
-      [new Terminal('2\n')],
-    ],
-  });
-
-  const input2 = `S -> 1\\\n2`; // escape newline
-  const g2 = new FCSGrammar(input2);
-  expect(g2['rules']).toEqual({
-    S: [
-      [new Terminal('12')],
-    ],
-  });
-
-  const input3 = `S -> A
-                  S -> 2`;
-  const g3 = new FCSGrammar(input3);
-  expect(g3['rules']).toEqual({
-    S: [
-      [new Terminal('A')],
-      [new Terminal('2')],
-    ],
-  });
-
-  const input4 = `S -> \\AA
-                  A -> 2`;
-  const g4 = new FCSGrammar(input4);
-  expect(g4['rules']).toEqual({
-    S: [
-      [new Terminal('A'), new NonTerminal('A')],
-    ],
-    A: [
-      [new Terminal('2')],
-    ],
-  });
-  
-  const input5 = `S -> 1 | `;
-  const g5 = new FCSGrammar(input5);
-  expect(g5['rules']).toEqual({
-    S: [
-      [new Terminal('1')],
-      [new EmptySymbol()],
-    ],
-  });
-
-  const input6 = `S → 1 | 2`;
-  const g6 = new FCSGrammar(input6);
-  expect(g6['rules']).toEqual({
-    S: [
-      [new Terminal('1')],
-      [new Terminal('2')],
-    ],
+describe('simple rules', () => {
+  each([
+    ['one line two branches', `S -> 1 | 2`, {
+      S: [
+        [new Terminal('1')],
+        [new Terminal('2')],
+      ],
+    }],
+    ['redeclaration of symbols', `S -> 1\nS -> 2`, {
+      S: [
+        [new Terminal('1')],
+        [new Terminal('2')],
+      ],
+    }],
+    ['whitespace', `  S -> 1  \n  S  ->  2  `, {
+      S: [
+        [new Terminal('1')],
+        [new Terminal('2')],
+      ],
+    }],
+    ['combination of branch declarations', `S -> 1\nS -> 2 | 3`, {
+      S: [
+        [new Terminal('1')],
+        [new Terminal('2')],
+        [new Terminal('3')],
+      ],
+    }],
+    ['using non-terminal before declaration', `S -> A\nA -> 2`, {
+      S: [
+        [new NonTerminal('A')],
+      ],
+      A: [
+        [new Terminal('2')],
+      ],
+    }],
+    ['empty line', `S -> 1\n\nS -> 2`, {
+      S: [
+        [new Terminal('1')],
+        [new Terminal('2')],
+      ],
+    }],
+    ['empty line with whitespace', `\n   \nS -> 2`, {
+      S: [
+        [new Terminal('2')],
+      ],
+    }],
+  ]).test('%s', (_, input, output) => {
+    expect(new FCSGrammar(input)["rules"]).toEqual(output);
   });
 });
 
-test('invalid input', () => {
-  const input1 = `S`;
-  expect(() => new FCSGrammar(input1)).toThrow(new Error(`Unexpected line ending, expected rule indicator at line 1, column 2`));
+describe('special cases', () => {
+  each([
+    ['given newline etc', `S -> 1 | 2\\n\\t\\r\\f`, {
+      S: [
+        [new Terminal('1')],
+        [new Terminal('2\n\t\r\f')],
+      ],
+    }],
+    ['escape newline', `S -> 1\\\n2`, {
+      S: [
+        [new Terminal('12')],
+      ],
+    }],
+    ['newline', `S -> A\nS -> 2`, {
+      S: [
+        [new Terminal('A')],
+        [new Terminal('2')],
+      ],
+    }],
+    ['escape non-terminal', `S -> \\AA\nA -> 2`, {
+      S: [
+        [new Terminal('A'), new NonTerminal('A')],
+      ],
+      A: [
+        [new Terminal('2')],
+      ],
+    }],
+    ['empty branch', `S -> 1 | `, {
+      S: [
+        [new Terminal('1')],
+        [new EmptySymbol()],
+      ],
+    }],
+    ['other rule indicator', `S → 1 | 2`, {
+      S: [
+        [new Terminal('1')],
+        [new Terminal('2')],
+      ],
+    }],
+    ['control characters in input', `S \x01-> 1 | 2`, {
+      S: [
+        [new Terminal('1')],
+        [new Terminal('2')],
+      ],
+    }],
+    ['converting and merging', `S -> aAb`, {
+      S: [
+        [new Terminal('aAb')],
+      ]
+    }],
+  ]).test('%s', (_, input, output) => {
+    expect(new FCSGrammar(input)["rules"]).toEqual(output);
+  });
+});
 
-  const input2 = `\\ S ->`;
-  expect(() => new FCSGrammar(input2)).toThrow(new Error(`Unexpected literal ' ' at line 1, column 2`));
+describe('invalid input', () => {
+  each([
+    [`Unexpected line ending, expected rule indicator`, `S`],
+    [`Unexpected literal ' '`, `\\ S ->`],
+    [`Unexpected literal ' '`, `S\\ ->`],
+    [`Unexpected line ending, expected rule indicator`, `S -`],
+    [`Expected '>', got '!'`, `S -!`],
+    [`Expected '->' or '→', got '!'`, `S !`],
+    [`Unexpected 's', expected Non-Terminal`, `s ->`],
+  ]).test('%s', (err, input) => {
+    expect(() => new FCSGrammar(input)).toThrow(err);
+  });
 
-  const input3 = `S -`;
-  expect(() => new FCSGrammar(input3)).toThrow(new Error(`Unexpected line ending, expected rule indicator at line 1, column 4`));
+  test('Error has correct line and col number', () => {
+    expect(() => new FCSGrammar(`S`)).toThrow(`Unexpected line ending, expected rule indicator at line 1, column 2`);
+  });
 
-  const input4 = `S -!`;
-  expect(() => new FCSGrammar(input4)).toThrow(new Error(`Expected '>', got '!' at line 1, column 4`));
+  test('Error has correct line and col number new line', () => {
+    expect(() => new FCSGrammar(`S\\\n-`)).toThrow(`Unexpected line ending, expected rule indicator at line 2, column 2`);
+  });
+});
 
-  const input5 = `s ->`;
-  expect(() => new FCSGrammar(input5)).toThrow(new Error(`Unexpected 's', expected Non-Terminal at line 1, column 1`));
+describe('per-grammar overrides', () => {
+  test('checks for start symbol', () => {
+    const g1 = new FCSGrammar(`A -> a`);
+    expect(() => g1.checkValid()).toThrow(`Startsymbol 'S' not found`);
+    const g2 = new FCSGrammar(`S -> a`);
+    expect(() => g2.checkValid()).not.toThrow(`Startsymbol 'S' not found`);
+  });
+
+  test('clear and matches call private function with correct start symbol', () => {
+    const mock = jest.fn();
+    const g = new FCSGrammar(`S -> 1`);
+    g["initGenerator"] = mock.mockImplementationOnce(a => a);
+    g["match"] = mock.mockImplementationOnce((_, a) => a);
+    g.clear();
+    expect(mock.mock.results.pop()?.value).toBe('S');
+    g.matches('test');
+    expect(mock.mock.results.pop()?.value).toBe('S');
+  });
 });

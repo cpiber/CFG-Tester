@@ -1,9 +1,7 @@
 import ComparableSet, { Comparable } from "./set";
 
 class Test implements Comparable {
-  val: string;
-  constructor(val: string) {
-    this.val = val;
+  constructor(public val: string) {
   }
   hash() { return this.val; }
 }
@@ -107,7 +105,7 @@ test('iteration works', () => {
   expect(temp.mock.calls.length).toBe(2);
 });
 
-test('keys and values return iterator for contents', () => {
+test('keys, values and entries return iterator for contents', () => {
   const t1 = new Test('t1');
   const t2 = new Test('t2');
   set.add(t1);
@@ -116,6 +114,7 @@ test('keys and values return iterator for contents', () => {
 
   expect([...set.values()]).toEqual([t1, t2]);
   expect([...set.keys()]).toEqual([t1, t2]);
+  expect([...set.entries()]).toEqual([[t1, t1], [t2, t2]]);
 });
 
 test('copying set works', () => {
@@ -129,4 +128,8 @@ test('copying set works', () => {
   expect(set2.size).toBe(2);
   expect(set2.has(t1)).toBe(true);
   expect(set2.has(t2)).toBe(true);
+});
+
+test('stringTag correctly set', () => {
+  expect(set[Symbol.toStringTag]).toBe("ComparableSet");
 });

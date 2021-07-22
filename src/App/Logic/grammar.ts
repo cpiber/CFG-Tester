@@ -70,7 +70,7 @@ export abstract class Grammar {
       }
       this.endLine(start);
     } catch (e) {
-      throw new Error(`${(e as Error).message || e} at line ${line + 1}, column ${column}`);
+      throw new Error(`${(e as Error).message} at line ${line + 1}, column ${column}`);
     }
   }
 
@@ -189,8 +189,6 @@ export abstract class Grammar {
           this.predictor(s, k, state);
         } else if (s.isTerminal()) {
           this.scanner(s, k, state, str);
-        } else {
-          throw new Error('Unknown symbol type, this should never happen!');
         }
       }
     }

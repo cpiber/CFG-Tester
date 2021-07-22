@@ -55,6 +55,7 @@ describe('generating strings', () => {
       ]
     };
     const grammar = new TestGrammar(rules);
+    expect(() => grammar.next()).toThrow(/without a generator/);
     grammar.clear();
     expect(grammar.next()).toBe('1');
     expect(grammar.next()).toBe('2');
