@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Query from '../Logic/querys';
+import Query from '../Logic/providers/querys';
 import styles from './bodyComponent.module.scss';
 import Textarea from './Textarea';
 

@@ -1,4 +1,4 @@
-import ComparableSet, { Comparable } from "./set";
+import ComparableSet, { Comparable } from "./../set";
 
 abstract class GSymbol {
   constructor(public symbol: string) {

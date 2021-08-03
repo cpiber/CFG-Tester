@@ -1,9 +1,8 @@
 import { act, cleanup, fireEvent, render } from '@testing-library/react';
 import { stringify } from 'query-string';
 import React, { useEffect } from 'react';
-import type { Grammar } from '../Logic/grammar';
-import { Terminal } from '../Logic/grammartypes';
-import Query from './../Logic/querys';
+import { Grammar, Terminal } from '../Logic/grammar';
+import Query from './../Logic/providers/querys';
 import RulesInput from './RulesInput';
 
 type C = (g: Grammar | undefined) => void;

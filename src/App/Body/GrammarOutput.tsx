@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import type { Grammar } from '../Logic/grammar';
-import Query from '../Logic/querys';
+import Query from '../Logic/providers/querys';
 import { setMap } from '../Logic/set';
 import { readGenNum, writeGenNum } from '../values';
 import stylesBody from './bodyComponent.module.scss';

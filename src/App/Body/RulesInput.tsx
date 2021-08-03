@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import FCSGrammar from '../Logic/fcsgrammar';
-import Query from '../Logic/querys';
+import FCSGrammar from '../Logic/grammar/fcsgrammar';
+import Query from '../Logic/providers/querys';
 import styles from './bodyComponent.module.scss';
 import Textarea from './Textarea';
 

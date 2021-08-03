@@ -1,6 +1,6 @@
 import each from 'jest-each';
 import FCSGrammar from "./fcsgrammar";
-import { EmptySymbol, NonTerminal, Terminal } from "./grammartypes";
+import { EmptySymbol, NonTerminal, Terminal } from '.';
 
 let debug: typeof console.debug;
 beforeAll(() => {

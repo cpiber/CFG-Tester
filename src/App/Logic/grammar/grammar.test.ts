@@ -1,5 +1,4 @@
-import { Grammar } from "./grammar";
-import { EmptySymbol, NonTerminal, Rule, Terminal } from "./grammartypes";
+import { Grammar, EmptySymbol, NonTerminal, Rule, Terminal } from '.';
 
 export class TestGrammar extends Grammar {
   constructor(rules: { [key: string]: Rule[] }) {

@@ -1,6 +1,6 @@
-import { readMaxDepth, readMaxIter, readMaxNonTerms } from '../values';
+import { readMaxDepth, readMaxIter, readMaxNonTerms } from '../../values';
 import { EmptySymbol, NonNull as ParseStateNonNull, NonTerminal, Parse, ParseState, ParseStateSet, QueueElement, Rule, Terminal } from './grammartypes';
-import ComparableSet from './set';
+import ComparableSet from './../set';
 
 // eslint-disable-next-line no-control-regex
 export const control = /[\u0000-\u0008\u000E-\u001f\u007f-\u009F]/; // control except whitespace https://stackoverflow.com/a/46637343/

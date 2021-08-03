@@ -1,5 +1,5 @@
 import React from 'react';
-import Query from '../Logic/querys';
+import Query from '../Logic/providers/querys';
 import styles from './Body.module.scss';
 import GrammarOutput from './GrammarOutput';
 import RulesInput from './RulesInput';
@@ -19,13 +19,13 @@ const Body = ({ className }: Props) => {
       <Query.Provider initialState={window.location.hash}>
         <RulesInput
           className={styles.left}
-        ></RulesInput>
+        />
         <TextInput
           className={styles.rightTop}
-        ></TextInput>
+        />
         <GrammarOutput
           className={styles.rightBottom}
-        ></GrammarOutput>
+        />
       </Query.Provider>
     </div>
   )

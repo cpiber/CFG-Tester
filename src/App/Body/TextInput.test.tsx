@@ -1,10 +1,9 @@
 import { act, cleanup, fireEvent, render } from '@testing-library/react';
 import { stringify } from 'query-string';
 import React, { useEffect } from 'react';
-import { Grammar } from '../Logic/grammar';
-import { NonFunctionalGrammar, TestGrammar as FunctionalGrammar } from '../Logic/grammar.test';
-import { Terminal } from '../Logic/grammartypes';
-import Query from '../Logic/querys';
+import { Grammar, Terminal } from '../Logic/grammar';
+import { NonFunctionalGrammar, TestGrammar as FunctionalGrammar } from '../Logic/grammar/grammar.test';
+import Query from '../Logic/providers/querys';
 import TextInput from './TextInput';
 
 type C = (i: string) => void;

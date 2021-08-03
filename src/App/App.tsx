@@ -6,6 +6,7 @@ import Header from './Header/Header';
 
 
 const App = () => {
+
   return (
     <div className="App" data-testid="app">
       <Header />

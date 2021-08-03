@@ -10,9 +10,10 @@
   width: 100%;
 }
 
-.settings {
+.settings, .close {
   height: 1em;
   flex: 0 0 auto;
+  cursor: pointer;
 
   svg {
     display: block;

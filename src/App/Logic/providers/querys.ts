@@ -1,7 +1,7 @@
 import { stringify, parse } from 'query-string';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createContainer } from 'unstated-next';
-import type { Grammar } from './grammar';
+import type { Grammar } from './../grammar';
 
 declare global {
   interface Window {

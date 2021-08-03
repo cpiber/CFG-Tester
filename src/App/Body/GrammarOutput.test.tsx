@@ -1,9 +1,8 @@
 import { cleanup, fireEvent, render } from '@testing-library/react';
 import React, { useEffect } from 'react';
-import type { Grammar } from '../Logic/grammar';
-import { NonFunctionalGrammar, TestGrammar } from '../Logic/grammar.test';
-import { EmptySymbol, NonTerminal, Terminal } from '../Logic/grammartypes';
-import Query from './../Logic/querys';
+import { EmptySymbol, Grammar, NonTerminal, Terminal } from '../Logic/grammar';
+import { NonFunctionalGrammar, TestGrammar } from '../Logic/grammar/grammar.test';
+import Query from './../Logic/providers/querys';
 import GrammarOutput from './GrammarOutput';
 
 interface Props { grammar?: Grammar }

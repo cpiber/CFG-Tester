@@ -1,5 +1,4 @@
-import { Grammar, whitespace } from "./grammar";
-import { NonTerminal, Parse, Rule, Terminal } from "./grammartypes";
+import { Grammar, NonTerminal, Parse, Rule, Terminal, whitespace } from '.';
 
 const nonTerminal = /[A-Z]/;
 const escape = /[\\]/;

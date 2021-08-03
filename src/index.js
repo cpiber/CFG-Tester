@@ -1,9 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import ReactModal from 'react-modal';
 import App from './App/App.tsx';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
+ReactModal.setAppElement('#root');
 ReactDOM.render(<App />, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
