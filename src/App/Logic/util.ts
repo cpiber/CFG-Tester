@@ -1,6 +1,7 @@
 export const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, min), max);
 
-export function extendedClamp(r: string | number | null, def = 0, min?: number, max?: number) {
+export type EClampVal = number | string | null;
+export function extendedClamp(r: EClampVal, def = 0, min?: number, max?: number) {
   const val = r === null || isNaN(+r) ? def : +r;
 
   switch (arguments.length) {
