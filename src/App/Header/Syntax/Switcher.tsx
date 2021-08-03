@@ -17,13 +17,15 @@ const SyntaxSwitcher = ({ className }: Props) => {
   
   return (
     <div className={`${className || ''}`}>
-      Select syntax:
+      <h3>Select syntax</h3>
+
       <RadioGroup onChange={onChange} value={syntax}>
         <FCS />
         <BNF />
       </RadioGroup>
 
-      Both syntaxes above produce the same grammar, with different names for <span className={stylesCode.entry}>Start</span>-, <span className={stylesCode.nonterminal}>non-terminal</span> and <span className={stylesCode.terminal}>terminal</span> symbols.
+      <p>Both syntaxes above produce the same grammar, with different names for <span className={stylesCode.entry} data-tip="The entry symbol into the grammar">Start</span>-, <span className={stylesCode.nonterminal}>non-terminal</span> and <span className={stylesCode.terminal}>terminal</span> symbols.</p>
+      <p>BNF is stricter, with more checks to ensure no unintended side-effects are produced.</p>
     </div>
   )
 };

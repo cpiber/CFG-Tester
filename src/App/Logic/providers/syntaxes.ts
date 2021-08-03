@@ -2,6 +2,7 @@ import { createContainer } from 'unstated-next';
 import { useState, useCallback } from 'react';
 import { readSyntax, GrammarSyntax, writeSyntax } from '../../values';
 import FCSGrammar from '../grammar/fcsgrammar';
+import BNFGrammar from '../grammar/bnfgrammar';
 
 const useSyntax = () => {
   const [ syntax, _setSyntax ] = useState(readSyntax());
@@ -20,5 +21,5 @@ export default Syntax;
 export const createGrammarFromSyntax = (syntax: GrammarSyntax, rules: string) => {
   if (syntax === 'fcs')
     return new FCSGrammar(rules);
-  throw TypeError(`Unknown syntax ${syntax}`);
+  return new BNFGrammar(rules);
 };

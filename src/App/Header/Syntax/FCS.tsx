@@ -1,18 +1,23 @@
-import React from 'react';
+import React, { HTMLProps } from 'react';
 import { RadioButton } from '../../Radio';
 import stylesCode from './code.module.scss';
 
-const n = stylesCode.nonterminal;
-const t = stylesCode.terminal;
+interface SProps extends HTMLProps<HTMLSpanElement> {
+  value: string;
+}
+
+const E = ({ value: val, ...args }: SProps) => <span className={stylesCode.entry} {...args}>{val}</span>;
+const N = ({ value: val, ...args }: SProps) => <span className={stylesCode.nonterminal} {...args}>{val}</span>;
+const T = ({ value: val, ...args }: SProps) => <span className={stylesCode.terminal} {...args}>{val}</span>;
 
 const FCS = () => {
   return (
     <div>
-      <label data-tip="A common style I could not find a name for"><RadioButton value="fcs" className={stylesCode.box} /><span>FCS</span></label>
+      <label><RadioButton value="fcs" className={stylesCode.box} /><span>FCS</span></label>
       <code className={stylesCode.code}>
-        <span className={`${stylesCode.entry} ${n}`}>S</span> -&gt; <span className={n}>T</span><span className={t}>b</span> | <span className={t}>a</span><br />
-        <span className={n}>T</span> → <span className={t}>1</span><br />
-        <span className={n}>T</span> → <span className={t}>2</span>
+        <E value='S' /> -&gt; <N value='T' /><T value='B' data-tip="Unresolved non-terminals get converted to terminals" /> | <T value='a' /> | <T value="&nbsp;" data-tip="Empty branches work implicitly" /><br />
+        <N value='T' /> → <T value='1' /><br />
+        <N value='T' /> → <T value='2' />
       </code>
     </div>
   )

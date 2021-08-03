@@ -16,8 +16,8 @@ export class Terminal extends GSymbol {
   equals(other: GSymbol): boolean {
     return other instanceof Terminal && other.symbol === this.symbol;
   }
-  static construct(sym: string) {
-    return EmptySymbol.isEmpty(sym) ? new EmptySymbol() : new Terminal(sym);
+  static construct(sym: string, strict = false) {
+    return EmptySymbol.isEmpty(sym, strict) ? new EmptySymbol() : new Terminal(sym);
   }
   get [Symbol.toStringTag]() { return "Terminal" }
 }
@@ -25,8 +25,8 @@ export class EmptySymbol extends Terminal {
   constructor() {
     super("");
   }
-  static isEmpty(char: string) {
-    return char === '' || char === '^' || char === 'ε';
+  static isEmpty(char: string, strict = false) {
+    return char === '' || (!strict && (char === '^' || char === 'ε'));
   }
   get [Symbol.toStringTag]() { return "EmptySymbol" }
 }
@@ -63,7 +63,6 @@ export type NonNull<T extends ParseState> = ParseState<NonNullable<InferSym<T>>>
 
 export type ParseHandle = (char: string, literal: boolean) => void;
 export class Parse {
-  rule: Rule = [];
-  constructor(public handle: ParseHandle, public currentSymbol?: NonTerminal, public currentInput = '', public whitespace = '') {
+  constructor(public handle: ParseHandle, public currentSymbol?: NonTerminal, public rule: Rule = [], public currentInput = '', public whitespace = '') {
   }
 }

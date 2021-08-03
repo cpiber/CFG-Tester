@@ -76,13 +76,7 @@ class FCSGrammar extends Grammar {
         continue;
       rule[i] = new Terminal(rule[i].symbol);
     }
-    // merge terminals
-    for (let i = rule.length - 1; i > 0; i--) {
-      if (!(rule[i] instanceof Terminal) || !(rule[i - 1] instanceof Terminal))
-        continue;
-      rule[i - 1].symbol += rule[i].symbol;
-      rule.splice(i, 1);
-    }
+    this.mergeTerminals(rule);
   }
 
   clear() {

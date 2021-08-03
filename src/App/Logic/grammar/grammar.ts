@@ -56,10 +56,10 @@ export abstract class Grammar {
         else if (char.match(escape))
           literal = true;
         else if (char === '\n') {
-          column = 0;
-          line ++;
           if (!literal)
             this.endLine(start);
+          column = 0;
+          line ++;
         } else {
           this.currentState.handle.call(this, char, literal);
           literal = false;
@@ -97,6 +97,19 @@ export abstract class Grammar {
     if (char === 'f')
       return '\f';
     return char;
+  }
+
+  protected mergeTerminals(rule: Rule) {
+    // merge terminals
+    for (let i = rule.length - 1; i > 0; i--) {
+      if (!(rule[i] instanceof Terminal) || !(rule[i - 1] instanceof Terminal))
+        continue;
+      if (rule[i - 1] instanceof EmptySymbol)
+        rule[i - 1] = rule[i];
+      else
+        rule[i - 1].symbol += rule[i].symbol;
+      rule.splice(i, 1);
+    }
   }
 
   private endLine(start?: Parse) {
