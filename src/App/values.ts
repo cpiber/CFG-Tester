@@ -1,12 +1,12 @@
 import { extendedClamp } from './Logic/util';
 
-const EXP_DEPTH = 'cfg_maxdepth'; // to prevent infinite recursion
-const EXP_NONTERM = 'cfg_maxnonterm'; // maximum non-terminals in a row
-const EXP_ITER = 'cfg_iter'; // maximum iterations between yields per call
-const NUM_KEY = 'cfg_gen_number';
+export const EXP_DEPTH = 'cfg_maxdepth'; // to prevent infinite recursion
+export const EXP_NONTERM = 'cfg_maxnonterm'; // maximum non-terminals in a row
+export const EXP_ITER = 'cfg_iter'; // maximum iterations between yields per call
+export const NUM_KEY = 'cfg_gen_number';
 
 type toNumArgsRest = (typeof extendedClamp) extends (str: string, ...args: infer R) => number ? R : never;
-const readNum = (name: string, _: number, ...args: toNumArgsRest) => extendedClamp(window.localStorage.getItem(name) || '', ...args);
+const readNum = (name: string, _: number, ...args: toNumArgsRest) => extendedClamp(window.localStorage.getItem(name), ...args);
 const writeNum = (name: string, val: number, ...args: toNumArgsRest) => {
   const v = extendedClamp(val, ...args);
   window.localStorage.setItem(name, '' + v);
