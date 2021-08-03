@@ -2,6 +2,7 @@ import { act, cleanup, fireEvent, render } from '@testing-library/react';
 import { stringify } from 'query-string';
 import React, { useEffect } from 'react';
 import { Grammar, Terminal } from '../Logic/grammar';
+import Syntax from '../Logic/providers/syntaxes';
 import Query from './../Logic/providers/querys';
 import RulesInput from './RulesInput';
 
@@ -19,7 +20,7 @@ const TestComponent = ({ effect }: Props) => {
 }
 
 const renderTest = (cb?: C, rules = "") => render(
-  <Query.Provider initialState={stringify({ rules })}><RulesInput /><TestComponent effect={cb} /></Query.Provider>
+  <Syntax.Provider><Query.Provider initialState={stringify({ rules })}><RulesInput /><TestComponent effect={cb} /></Query.Provider></Syntax.Provider>
 );
 
 let mock: jest.Mock;
