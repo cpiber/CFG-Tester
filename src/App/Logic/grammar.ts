@@ -1,19 +1,16 @@
-import { EmptySymbol, NonTerminal, Parse, ParseState, NonNull as ParseStateNonNull, ParseStateSet, QueueElement, Rule, Terminal } from './grammartypes';
+import { readMaxDepth, readMaxIter, readMaxNonTerms } from '../values';
+import { EmptySymbol, NonNull as ParseStateNonNull, NonTerminal, Parse, ParseState, ParseStateSet, QueueElement, Rule, Terminal } from './grammartypes';
 import ComparableSet from './set';
 
 // eslint-disable-next-line no-control-regex
 export const control = /[\u0000-\u0008\u000E-\u001f\u007f-\u009F]/; // control except whitespace https://stackoverflow.com/a/46637343/
 export const whitespace = /\s/;
 
-const EXP_DEPTH = 'cfg_maxdepth'; // to prevent infinite recursion
-const EXP_NONTERM = 'cfg_maxnonterm'; // maximum non-terminals in a row
-const EXP_ITER = 'cfg_iter'; // maximum iterations between yields per call
-
 export abstract class Grammar {
   private gen: Generator<string | Error, undefined, never> | undefined = undefined;
-  private maxDepth = +(window.localStorage.getItem(EXP_DEPTH) || 20);
-  private maxNonTerms = +(window.localStorage.getItem(EXP_NONTERM) || 10);
-  private maxIter = +(window.localStorage.getItem(EXP_ITER) || 5000);
+  private maxDepth = readMaxDepth();
+  private maxNonTerms = readMaxNonTerms();
+  private maxIter = readMaxIter();
   protected currentState: Parse;
 
   protected rules: { [key: string]: Rule[] } = {};

@@ -38,6 +38,18 @@ a {
   }
 }
 
+$outer: 12px;
+@mixin bodypadding($add: 0, $top: '') {
+  padding: #{$top} $add + 4px;
+
+  @include portrait {
+    padding: #{$top} $add + 8px;
+  }
+  @include desktop {
+    padding: #{$top} $add + 0;
+  }
+}
+
 .App {
   display: flex;
   flex-direction: column;
@@ -50,39 +62,29 @@ a {
   }
 
   // General header and footer styles
-  &-header, &-footer {
-    padding: 2px 4px;
-  }
-
   &-header {
     font-size: 22px;
     @include desktop {
       font-size: 28px;
     }
 
-    padding: 18px 14px;
+    @include bodypadding($outer, 18px);
 
     background-color: $primary;
     //box-shadow: 0px 2px 6px grey;
   }
 
   &-footer {
+    padding: 2px 4px;
     font-size: 14px;
   }
 
   &-body {
-    padding: 4px;
-
-    @include portrait {
-      padding: 8px;
-    }
-    @include desktop {
-      padding: 0;
-    }
+    @include bodypadding();
   }
 
   &-bodyComponent {
-    margin: 12px;
+    margin: $outer;
     padding: 6px 4px;
     border-radius: 12px;
     /*border: 2px solid $primary;

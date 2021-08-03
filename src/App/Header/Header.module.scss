@@ -1,0 +1,22 @@
+@import '../variables';
+
+.cols {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.title {
+  width: 100%;
+}
+
+.settings {
+  height: 1em;
+  flex: 0 0 auto;
+
+  svg {
+    display: block;
+    height: 100%;
+    width: auto;
+  }
+}
