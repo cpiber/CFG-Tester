@@ -40,3 +40,14 @@ $minHeight: 612px;
     @content;
   }
 }
+
+@mixin bodypadding($add: 0, $top: '') {
+  padding: #{$top} $add + 4px;
+
+  @include portrait {
+    padding: #{$top} $add + 8px;
+  }
+  @include desktop {
+    padding: #{$top} $add + 0;
+  }
+}

@@ -5,7 +5,7 @@ import { setMap } from '../Logic/set';
 import { readGenNum, writeGenNum } from '../values';
 import stylesBody from './bodyComponent.module.scss';
 import styles from './GrammarOutput.module.scss';
-import textarea from './textarea.module.scss';
+import textarea from './Textarea.module.scss';
 
 
 interface Props {

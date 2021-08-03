@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ReactModal from 'react-modal';
+import ReactTooltip from 'react-tooltip';
 import styles from './Header.module.scss';
 import Modal from './Modal';
 import { ReactComponent as Cog } from './settings.svg';
@@ -28,6 +29,7 @@ const Header = ({ className }: Props) => {
       <ReactModal
         isOpen={isOpen}
         onRequestClose={close}
+        onAfterOpen={() => ReactTooltip.rebuild()}
       >
         <Modal close={close} />
       </ReactModal>

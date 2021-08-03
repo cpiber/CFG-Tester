@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import uniqueString from 'unique-string';
-import styles from './textarea.module.scss';
+import styles from './Textarea.module.scss';
 
 
 interface Props {
@@ -11,10 +11,9 @@ interface Props {
   onChange?: ((event: React.ChangeEvent<HTMLTextAreaElement>) => void);
   value?: string;
   aria?: string;
-  children?: JSX.Element[] | JSX.Element;
 }
 
-const Textarea = ({ id, className, title, placeholder, onChange, value, aria, children }: Props) => {
+const Textarea = ({ id, className, title, placeholder, onChange, value, aria, children }: PropsWithChildren<Props>) => {
   const id_ = id || uniqueString();
   return (
     <div className={`${styles.area} ${className || ''}`} data-testid="container">

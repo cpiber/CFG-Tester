@@ -1,0 +1,18 @@
+.nonterminal, .entry {
+  &::before {
+    content: '<';
+  }
+  &::after {
+    content: '>';
+  }
+  &::before, &::after {
+    font-weight: normal;
+  }
+}
+
+.terminal {
+  &::before, &::after {
+    content: '"';
+    font-style: normal;
+  }
+}

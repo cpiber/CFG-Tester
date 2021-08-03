@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import FCSGrammar from '../Logic/grammar/fcsgrammar';
 import Query from '../Logic/providers/querys';
+import Syntax from '../Logic/providers/syntaxes';
 import styles from './bodyComponent.module.scss';
 import Textarea from './Textarea';
 
@@ -11,6 +11,7 @@ interface Props {
 
 const RulesInput = ({ className }: Props) => {
   const { rules, setRules, setGrammar } = Query.useContainer();
+  const { createGrammar } = Syntax.useContainer();
   const [ status, setStatus ] = useState(["",""]);
   const timeout = useRef(0);
 
@@ -20,7 +21,6 @@ const RulesInput = ({ className }: Props) => {
 
   const clickGenerate = (e: React.MouseEvent) => {
     (e.target as HTMLElement).blur();
-
     loadRules();
   };
 
@@ -28,14 +28,14 @@ const RulesInput = ({ className }: Props) => {
   const loadRules = useCallback(() => {
     timeout.current = window.setTimeout(() => {
       try {
-        setGrammar(new FCSGrammar(rules));
+        setGrammar(createGrammar(rules));
         setStatus(["ok", ""]);
       } catch (err) {
         setStatus(["error",`${err}`]);
       }
     }, 50);
     return () => window.clearTimeout(timeout.current);
-  }, [rules, setGrammar]);
+  }, [rules, setGrammar, createGrammar]);
 
   useEffect(loadRules, [rules, loadRules]);
 

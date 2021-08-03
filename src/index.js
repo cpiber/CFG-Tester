@@ -6,6 +6,7 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 
 ReactModal.setAppElement('#root');
+ReactModal.defaultStyles.content.inset = '';
 ReactDOM.render(<App />, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change

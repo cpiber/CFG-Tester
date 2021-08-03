@@ -1,0 +1,27 @@
+$lr: 6px;
+
+.box {
+  height: 1em;
+  margin: 0 $lr / 2;
+}
+
+.code {
+  display: block;
+  padding: 8px 16px;
+  margin: 4px $lr;
+  background-color: lightgray;
+  border-radius: 3px;
+}
+
+.entry {
+  @extend .nonterminal;
+  text-decoration: underline;
+}
+
+.nonterminal {
+  font-weight: bold;
+}
+
+.terminal {
+  font-style: italic;
+}

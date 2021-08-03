@@ -1,4 +1,10 @@
+@import '../variables';
+
 .close {
   display: flex;
   align-items: center;
+}
+
+.content {
+  @include bodypadding(0, 20px);
 }

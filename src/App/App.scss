@@ -38,18 +38,14 @@ a {
   }
 }
 
-$outer: 12px;
-@mixin bodypadding($add: 0, $top: '') {
-  padding: #{$top} $add + 4px;
-
-  @include portrait {
-    padding: #{$top} $add + 8px;
-  }
-  @include desktop {
-    padding: #{$top} $add + 0;
-  }
+label {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  gap: 5px;
 }
 
+$outer: 12px;
 .App {
   display: flex;
   flex-direction: column;
@@ -201,5 +197,13 @@ $outer: 12px;
   &::-webkit-outer-spin-button, &::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
+  }
+}
+
+.ReactModal__Content {
+  inset: 15px;
+
+  @include portrait {
+    inset: 40px;
   }
 }
