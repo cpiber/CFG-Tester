@@ -63,6 +63,6 @@ export type NonNull<T extends ParseState> = ParseState<NonNullable<InferSym<T>>>
 
 export type ParseHandle = (char: string, literal: boolean) => void;
 export class Parse {
-  constructor(public handle: ParseHandle, public currentSymbol?: NonTerminal, public rule: Rule = [], public currentInput = '', public whitespace = '') {
+  constructor(public handle: ParseHandle, public currentSymbol?: NonTerminal, public rule: Rule = [], public currentInput = '', public whitespace = '', public data = '') {
   }
 }

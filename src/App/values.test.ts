@@ -1,5 +1,5 @@
 import { clamp } from './Logic/util';
-import { EXP_DEPTH, EXP_ITER, EXP_NONTERM, NUM_KEY, readGenNum, readMaxDepth, readMaxIter, readMaxNonTerms, writeGenNum, writeMaxDepth, writeMaxIter, writeMaxNonTerms } from "./values";
+import { EXP_DEPTH, EXP_ITER, EXP_NONTERM, NUM_KEY, readGenNum, readMaxDepth, readMaxIter, readMaxNonTerms, readSyntax, SYN_KEY, writeGenNum, writeMaxDepth, writeMaxIter, writeMaxNonTerms, writeSyntax } from "./values";
 
 afterEach(() => {
   window.localStorage.clear();
@@ -98,5 +98,36 @@ describe('genNum', () => {
     writeGenNum(val2);
     expect(+(window.localStorage.getItem(NUM_KEY) || '')).toBe(clamp(val2, 1, 999));
     expect(readGenNum()).toBe(clamp(val2, 1, 999));
+  });
+});
+
+describe('syntax', () => {
+  test('reading with nothing in localstorage works with default', () => {
+    expect(readSyntax()).toBe('fcs');
+  });
+
+  test('reading reads from localstorage', () => {
+    const val = 'bnf';
+    window.localStorage.setItem(SYN_KEY, val);
+    expect(readSyntax()).toBe(val);
+  });
+
+  test('writing puts value', () => {
+    const val = 'bnf';
+    writeSyntax(val);
+    expect(window.localStorage.getItem(SYN_KEY)).toBe(val);
+    expect(readSyntax()).toBe(val);
+  });
+
+  test('reading respects constraints', () => {
+    window.localStorage.setItem(SYN_KEY, 'test');
+    expect(readSyntax()).toBe('fcs');
+  });
+
+  test('writing respects constraints', () => {
+    const def = 'fcs';
+    writeSyntax('value');
+    expect(window.localStorage.getItem(SYN_KEY)).toBe(def);
+    expect(readSyntax()).toBe(def);
   });
 });

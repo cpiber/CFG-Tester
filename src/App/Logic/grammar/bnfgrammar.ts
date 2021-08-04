@@ -74,10 +74,14 @@ class BNFGrammar extends Grammar {
       return;
     }
     if (char === '"' && !literal) {
-      this.currentState = new Parse(this.parseTerminal, this.currentState.currentSymbol, this.currentState.rule);
+      this.currentState = new Parse(this.parseTerminal, this.currentState.currentSymbol, this.currentState.rule, '', '', '"');
       return;
     }
-    throw new Error(`Expected '<' or '"', got${literal ? ' literal' : ''} ${char}`);
+    if (char === "'" && !literal) {
+      this.currentState = new Parse(this.parseTerminal, this.currentState.currentSymbol, this.currentState.rule, '', '', "'");
+      return;
+    }
+    throw new Error(`Expected '<', '"', or ''', got${literal ? ' literal' : ''} '${char}'`);
   }
 
   private parseNonTerminal(char: string, literal: boolean) {
@@ -92,11 +96,13 @@ class BNFGrammar extends Grammar {
   }
 
   private parseTerminal(char: string, literal: boolean) {
-    if (char === '"' && !literal) {
+    if (char === this.currentState.data && !literal) {
       this.currentState.rule.push(Terminal.construct(this.currentState.currentInput, true));
       this.currentState = new Parse(this.parseBranches, this.currentState.currentSymbol, this.currentState.rule);
       return;
     }
+    if (literal)
+      char = this.toSpecial(char);
     this.currentState.currentInput += char;
   }
 

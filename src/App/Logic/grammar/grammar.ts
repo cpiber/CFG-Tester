@@ -53,13 +53,14 @@ export abstract class Grammar {
         const char = rules[i];
         if (char.match(control))
           console.debug(`Purged control character ${char} at ${i}`);
-        else if (char.match(escape))
+        else if (char.match(escape) && !literal)
           literal = true;
         else if (char === '\n') {
           if (!literal)
             this.endLine(start);
           column = 0;
           line ++;
+          literal = false;
         } else {
           this.currentState.handle.call(this, char, literal);
           literal = false;
@@ -87,7 +88,7 @@ export abstract class Grammar {
     return char;
   }
 
-  private toSpecial(char: string) {
+  protected toSpecial(char: string) {
     if (char === 'n')
       return '\n';
     if (char === 't')

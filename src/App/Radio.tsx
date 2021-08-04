@@ -18,9 +18,7 @@ export const RadioGroup = ({ className, children, ...rest }: PropsWithChildren<R
   )
 };
 
-interface RadioButtonProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'value' | 'onChange' | 'checked'> {
-  value: string;
-}
+type RadioButtonProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'onChange' | 'checked'>;
 export const RadioButton = ({ value, children, ...rest }: RadioButtonProps) => {
   const { onChange, value: radioValue } = useContext(RadioContext);
 

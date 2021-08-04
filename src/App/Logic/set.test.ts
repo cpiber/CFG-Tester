@@ -1,4 +1,4 @@
-import ComparableSet, { Comparable } from "./set";
+import ComparableSet, { Comparable, setMap } from "./set";
 
 class Test implements Comparable {
   constructor(public val: string) {
@@ -132,4 +132,14 @@ test('copying set works', () => {
 
 test('stringTag correctly set', () => {
   expect(set[Symbol.toStringTag]).toBe("ComparableSet");
+});
+
+test('setmap produces correct result', () => {
+  const vals = [1, 2, 3, 4];
+  const s = new Set(vals);
+  const mapper = (v: number) => `${v + 10}`;
+
+  const exp = vals.map(mapper);
+  expect(setMap(s, mapper)).toEqual(exp);
+  expect([...s.values()].map(mapper)).toEqual(exp); // sanity check
 });

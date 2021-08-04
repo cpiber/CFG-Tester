@@ -1,5 +1,5 @@
 import each from 'jest-each';
-import FCSGrammar from "./fcsgrammar";
+import FCSGrammar from './fcsgrammar';
 import { EmptySymbol, NonTerminal, Terminal } from '.';
 
 let debug: typeof console.debug;
