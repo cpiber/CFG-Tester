@@ -105,10 +105,7 @@ export abstract class Grammar {
     for (let i = rule.length - 1; i > 0; i--) {
       if (!(rule[i] instanceof Terminal) || !(rule[i - 1] instanceof Terminal))
         continue;
-      if (rule[i - 1] instanceof EmptySymbol)
-        rule[i - 1] = rule[i];
-      else
-        rule[i - 1].symbol += rule[i].symbol;
+      rule[i - 1].symbol += rule[i].symbol;
       rule.splice(i, 1);
     }
   }
@@ -220,6 +217,11 @@ export abstract class Grammar {
   private predictor(s: ParseState<NonTerminal>, k: number, state: ParseStateSet) {
     for (const rule of this.rules[s.symbol.symbol]) {
       state[k].add(new ParseState(s.symbol, [], rule[0], rule.slice(1), k));
+    }
+    // if we finished any of the new symbols already, that symbol would drown
+    for (const n of state[k]) {
+      if (n.isFinished())
+        this.completer(n, k, state);
     }
   }
 

@@ -104,6 +104,27 @@ describe('special cases', () => {
         [new Terminal('aAb')],
       ]
     }],
+    ['mergin with just empty', `<start> ::= "" ""`, {
+      start: [
+        [new EmptySymbol()],
+      ]
+    }],
+    ['purging empty before', `<start> ::= "" <A>\n<A> ::= "a"`, {
+      start: [
+        [new NonTerminal('A')],
+      ],
+      A: [
+        [new Terminal('a')],
+      ]
+    }],
+    ['purging empty after', `<start> ::= <A> "" ""\n<A> ::= "a"`, {
+      start: [
+        [new NonTerminal('A')],
+      ],
+      A: [
+        [new Terminal('a')],
+      ]
+    }],
   ]).test('%s', (_, input, output) => {
     expect(new BNFGrammar(input)["rules"]).toEqual(output);
   });

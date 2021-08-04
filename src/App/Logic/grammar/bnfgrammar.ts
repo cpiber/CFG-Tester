@@ -1,4 +1,5 @@
-import { Grammar, NonTerminal, Parse, Terminal, whitespace } from '.';
+import { Grammar, NonTerminal, Parse, Rule, Terminal, whitespace } from '.';
+import { EmptySymbol } from './grammartypes';
 
 const escape = /[\\]/;
 
@@ -11,7 +12,7 @@ class BNFGrammar extends Grammar {
     for (const sym in this.rules) {
       const r = this.rules[sym];
       for (const rule of r) {
-        this.mergeTerminals(rule);
+        this.fixTerminals(rule);
       }
     }
   }
@@ -128,6 +129,16 @@ class BNFGrammar extends Grammar {
         }
       }
     }
+  }
+
+  private fixTerminals(rule: Rule) {
+    // purge empty symbols
+    for (let i = rule.length - 1; i >= 0 && rule.length > 1; i--) {
+      if (!(rule[i] instanceof EmptySymbol))
+        continue;
+      rule.splice(i, 1);
+    }
+    this.mergeTerminals(rule);
   }
 
   clear() {
