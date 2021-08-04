@@ -4,6 +4,10 @@ import Syntax from '../Logic/providers/syntaxes';
 import styles from './bodyComponent.module.scss';
 import Textarea from './Textarea';
 
+const placeholders = {
+  fcs: ['S -> 1 | 2 | 3', 'S -> 4 | 5 | 6'],
+  bnf: ['<start> ::= "1" | "2" | "3"', '<start> ::= "4" | "5" | "6"'],
+};
 
 interface Props {
   className?: string;
@@ -11,7 +15,7 @@ interface Props {
 
 const RulesInput = ({ className }: Props) => {
   const { rules, setRules, setGrammar } = Query.useContainer();
-  const { createGrammar } = Syntax.useContainer();
+  const { syntax, createGrammar } = Syntax.useContainer();
   const [ status, setStatus ] = useState(["",""]);
   const timeout = useRef(0);
 
@@ -50,7 +54,7 @@ const RulesInput = ({ className }: Props) => {
         onChange={rulesChange}
         title="Rules"
         aria="Rules that describe the grammar"
-        placeholder="Enter rules here... e.g.&#10;S -> 1 | 2 | 3&#10;S -> 4 | 5 | 6"
+        placeholder={`Enter rules here... e.g.\n${placeholders[syntax].join('\n')}`}
       >
         <div className="row1">
           <div className="status" role="status">

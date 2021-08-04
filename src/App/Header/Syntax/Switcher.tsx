@@ -24,8 +24,8 @@ const SyntaxSwitcher = ({ className }: Props) => {
         <BNF />
       </RadioGroup>
 
-      <p>Both syntaxes above produce the same grammar, with different names for <span className={stylesCode.entry} data-tip="The entry symbol into the grammar">Start</span>-, <span className={stylesCode.nonterminal}>non-terminal</span> and <span className={stylesCode.terminal}>terminal</span> symbols.</p>
-      <p>BNF is stricter, with more checks to ensure no unintended side-effects are produced.</p>
+      <p>Both syntaxes above produce the same grammar, with different names and conventions for <span className={stylesCode.entry} data-tip="The entry symbol into the grammar">Start</span>-, <span className={stylesCode.nonterminal}>non-terminal</span> and <span className={stylesCode.terminal}>terminal</span> symbols.</p>
+      <p>BNF is stricter and does not allow empty branches or implicit symbol declarations.</p>
     </div>
   )
 };
