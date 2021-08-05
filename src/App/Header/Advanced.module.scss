@@ -1,0 +1,53 @@
+.wrapper {
+  box-sizing: content-box;
+}
+
+.close {
+  .opener::before {
+    content: '\25BE';
+  }
+
+  .content {
+    display: none;
+  }
+}
+
+.open {
+  .opener::before {
+    content: '\25B4';
+  }
+}
+
+.opener {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+
+  &::before {
+    display: inline-block;
+  }
+}
+
+.content {
+  padding-left: 8px;
+  border-left: 0.1px solid gray;
+
+  label {
+    padding: 2px 0;
+  }
+}
+
+.warn {
+  font-style: italic;
+}
+
+.value {
+  height: 1em;
+}
+
+.clear {
+  display: inline-block;
+  padding-left: 12px;
+  cursor: pointer;
+}

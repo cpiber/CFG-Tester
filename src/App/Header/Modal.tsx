@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Advanced from './Advanced';
 import stylesH from './Header.module.scss';
 import styles from './Modal.module.scss';
 import SyntaxSwitcher from './Syntax/Switcher';
@@ -9,6 +10,8 @@ interface Props {
 }
 
 const Modal = ({ className, close }: Props) => {
+  const [ advancedOpen, setAdvancedOpen ] = useState(false);
+
   return (
     <div className={`${className || ''}`}>
       <div className={`${stylesH.cols} App-header`}>
@@ -21,6 +24,7 @@ const Modal = ({ className, close }: Props) => {
       </div>
 
       <SyntaxSwitcher className={styles.content} />
+      <Advanced className={styles.content} open={advancedOpen} setOpen={setAdvancedOpen} />
     </div>
   )
 };
