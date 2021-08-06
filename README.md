@@ -7,9 +7,31 @@
 
 CFGs (short for Context-Free Grammars) are an essential part of CS. This project aims to make them more accessible by providing a playground.
 
-In the app, a grammar can be entered (more syntaxes soon™) and its expansion observed. There is also a box for checking if the grammar accepts a given input or not.
+In the app, a grammar can be entered (see below) and its expansion observed. There is also a box for checking if the grammar accepts a given input or not.
 
 The app is available [here](https://cpiber.github.io/CFG-Tester).
+
+
+## UI
+
+When opening the web app, on the left side (top on mobile), a grammar can be entered. Currently, two syntaxes are supported, see below. The text entered here will be parsed into a workable grammar while typing. Errors are displayed at the bottom, with a red outline. If the grammar is valid, a green outline is displayed.
+
+On the right top (middle on mobile), a string to test against the grammar can be entered. The app will check if any expansion of the grammar would allow this string, i.e. check if the entered string is part of the language. Matching is performed while typing, and the status will be displayed below and via outline.
+
+The right bottom (bottom on mobile) can be used to generate a list of unique strings from the grammar. For this the app will try to expand non-terminals to all possible branches. To control recursions and deep expansions, there are variables to limit this generation.
+
+In the header, on the right, a settings symbol can be clicked to open a modal. Here, one of two syntaxes can be selected (see below), and the mentioned variables can be controlled under advanced.
+
+
+## Syntax
+
+Currently, two syntaxes are supported:
+
+- FCS, a common syntax I could not find a name for, so I used the abbreviation of the course where I learned about it. Non-terminals are uppercase letters, terminals lowercase (expect when a non-terminal can't be found). Valid symbols for the empty string are ` `, `^` and `ε`.
+- BNF, [Backus-Naur form](https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form). Non-terminals are surrounded by `<>`, terminals by `""` or `''`. A branch can't be left empty, at least the empty string has to be given.
+
+Examples for both are available in the app.
+
 
 &nbsp;
 
