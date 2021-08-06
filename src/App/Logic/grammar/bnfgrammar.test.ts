@@ -57,6 +57,16 @@ describe('simple rules', () => {
         [new Terminal('2')],
       ],
     }],
+    ['single quotes in double', `<start> ::= "'"`, {
+      start: [
+        [new Terminal("'")],
+      ],
+    }],
+    ['single quotes in double', `<start> ::= '"'`, {
+      start: [
+        [new Terminal('"')],
+      ],
+    }],
   ]).test('%s', (_, input, output) => {
     expect(new BNFGrammar(input)["rules"]).toEqual(output);
   });
@@ -133,8 +143,8 @@ describe('special cases', () => {
 describe('invalid input', () => {
   each([
     [`Unexpected line ending, expected rule indicator`, `<start>`],
-    [`Unexpected literal ' '`, `\\ <start> ::=`],
-    [`Unexpected literal ' '`, `<start>\\ ::=`],
+    [`Unexpected literal ' '`, `\\ <start> ::= ""`],
+    [`Unexpected literal ' '`, `<start>\\ ::= ""`],
     [`Unexpected line ending, expected rule indicator`, `<start> :`],
     [`Unexpected line ending, expected rule indicator`, `<start> ::`],
     [`Expected ':', got '!'`, `<start> :!`],
@@ -143,6 +153,11 @@ describe('invalid input', () => {
     [`Unexpected 's', expected '<'`, `s ::= ""`],
     [`Unexpected line ending, symbol declaration ended early`, `<start ::= ""`],
     [`Branches must not be empty`, `<start> ::= "1" | `],
+    [`Empty non-terminals not allowed`, `<> ::= "1"`],
+    [`Empty non-terminals not allowed`, `<start> ::= <>`],
+    [`Expected '<', '"', or ''', got 'a'`, `<start> ::= a`],
+    [`Expected '<', '"', or ''', got literal '"'`, `<start> ::= \\"a"`],
+    [`Undeclared symbol`, `<start> ::= <t>`],
   ]).test('%s', (err, input) => {
     expect(() => new BNFGrammar(input)).toThrow(err);
   });

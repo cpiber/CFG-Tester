@@ -18,18 +18,20 @@ const Header = ({ className }: Props) => {
   return (
     <header
       className={`${className || ''} ${styles.cols} App-header`}
+      data-testid="header"
     >
       <h1 className={styles.title}>
         <abbr title="Context-free grammar">CFG</abbr> Testing suite
       </h1>
       <div className={styles.settings}>
-        <Cog onClick={() => setOpen(true)} />
+        <Cog onClick={() => setOpen(true)} data-testid="cog" />
       </div>
 
       <ReactModal
         isOpen={isOpen}
         onRequestClose={close}
         onAfterOpen={() => ReactTooltip.rebuild()}
+        testId="modal"
       >
         <Modal close={close} />
       </ReactModal>

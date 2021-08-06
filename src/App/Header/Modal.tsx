@@ -18,7 +18,7 @@ const Modal = ({ className, close }: Props) => {
         <h2 className={stylesH.title}>
           Settings
         </h2>
-        <div className={`${stylesH.close} ${styles.close}`} onClick={close}>
+        <div className={`${stylesH.close} ${styles.close}`} onClick={close} data-testid="close">
           &times;
         </div>
       </div>

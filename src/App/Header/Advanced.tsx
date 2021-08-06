@@ -12,10 +12,10 @@ const Advanced = ({ className, open, setOpen }: Props) => {
   const c = `${styles.wrapper} ${open ? styles.open : styles.close}`;
   return (
     <div className={`${className || ''} ${c}`}>
-      <h3 className={styles.opener} onClick={() => setOpen(!open)}>
+      <h3 className={styles.opener} onClick={() => setOpen(!open)} data-testid="opener">
         Advanced
       </h3>
-      <div className={styles.content}>
+      <div className={styles.content} data-testid="content">
         <p className={styles.warn}>Note: These values were chosen carefully, changing them could cause problems.</p>
         <p><label>Max recursion depth: <Value read={readMaxDepth} write={writeMaxDepth} name={EXP_DEPTH} /></label>
            <label>Max non-terminals in a row: <Value read={readMaxNonTerms} write={writeMaxNonTerms} name={EXP_NONTERM} /></label>
@@ -43,7 +43,7 @@ const Value = ({ read, write, name }: VProps) => {
 
   return (
     <Fragment>
-      <input type="number" value={num} onChange={change} size={5} className={styles.value} />
+      <input type="number" value={num} onChange={change} size={5} className={styles.value} name={name} />
       <span onClick={clear} className={styles.clear} title="Clear value">&#x1f5d1;</span>
     </Fragment>
   );

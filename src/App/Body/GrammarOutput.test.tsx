@@ -154,3 +154,9 @@ test('clear resets error', () => {
   expect(getByRole('status')).toHaveTextContent('');
   expect(getByTestId('output')).toHaveClass('status-');
 });
+
+test('clearing number field does not force value', () => {
+  const { getByTestId } = renderTest();
+  fireEvent.change(getByTestId('number'), { target: { value: '' } });
+  expect(getByTestId('number')).toHaveValue(null);
+});

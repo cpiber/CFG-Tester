@@ -65,11 +65,6 @@ class BNFGrammar extends Grammar {
     const nchar = this.checkBranch(char, literal, true);
     if (nchar === null)
       return;
-    if (char.match(whitespace)) {
-      if (literal)
-        throw new Error(`Unexpected literal '${char}'`);
-      return; // ignore whitespace
-    }
     if (char === '<' && !literal) {
       this.currentState = new Parse(this.parseNonTerminal, this.currentState.currentSymbol, this.currentState.rule);
       return;
